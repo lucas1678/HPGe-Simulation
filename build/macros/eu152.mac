@@ -1,0 +1,11 @@
+/gps/particle ion
+/gps/ion 63 152 0 0  #Z, A, 0, 0
+/gps/direction -1 0 0 #momentum direction
+/gps/energy 0
+
+/gps/pos/type Volume
+/gps/pos/shape Sphere
+/gps/pos/centre 0 0 0 #centre of volume source
+/gps/pos/radius 1 cm  #radius of source sphere
+
+/run/beamOn 10000000

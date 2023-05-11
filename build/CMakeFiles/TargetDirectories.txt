@@ -1,0 +1,4 @@
+/home/lbackes/geant4/geant4-v11.0.1/projects/barium_project/build/CMakeFiles/rebuild_cache.dir
+/home/lbackes/geant4/geant4-v11.0.1/projects/barium_project/build/CMakeFiles/sim.dir
+/home/lbackes/geant4/geant4-v11.0.1/projects/barium_project/build/CMakeFiles/edit_cache.dir
+/home/lbackes/geant4/geant4-v11.0.1/projects/barium_project/build/CMakeFiles/BariumSimulation.dir

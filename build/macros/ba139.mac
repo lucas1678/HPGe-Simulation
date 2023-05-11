@@ -1,0 +1,24 @@
+/gps/particle ion
+/gps/ion 56 139 0 0  #Z, A, 0, 0   #<---- Modify Z and A numbers to change radioisotope!
+/gps/direction -1 0 0 #momentum direction
+/gps/energy 0          #energy is 0 so isotope is spawning with 0 momentum
+
+/gps/pos/type Volume
+/gps/pos/shape Sphere  #spawn isotopes in spherical volume 
+/gps/pos/centre 0 0 0 #centre of volume source
+/gps/pos/radius 1 cm  #radius of source sphere
+
+#/run/beamOn 1000
+#/run/beamOn 5000
+#/run/beamOn 10000
+#/run/beamOn 20000
+#/run/beamOn 40000
+#/run/beamOn 80000
+#/run/beamOn 160000
+#/run/beamOn 320000
+#/run/beamOn 640000
+#/run/beamOn 1000000
+
+#/run/beamOn 100000
+#/run/beamOn 120000
+#/run/beamOn 140000
