@@ -1,0 +1,26 @@
+/vis/open OGL
+/vis/viewer/set/viewpointVector 1 1 1  #set where the "camera" is positioned initially
+/vis/drawVolume
+/vis/viewer/set/autoRefresh true
+/vis/scene/add/trajectories smooth
+#/vis/scene/add/axes #draws x,y,z axes at the origin
+/vis/scene/add/eventID
+/vis/scene/endOfEventAction accumulate
+
+
+/vis/geometry/set/forceSolid logicDet     #detector     #draws volumes as solids instead of wireframe
+/vis/geometry/set/forceSolid logicShield1 #aluminum
+/vis/geometry/set/forceSolid logicShield2 #copper
+/vis/geometry/set/forceSolid logicShield3  #lead
+/vis/geometry/set/forceSolid logicTest     #wall
+/vis/geometry/set/forceSolid logicWindow  #Window
+
+/vis/geometry/set/colour logicDet 1 0.8 0 0.8 1     #middle three numbers are rgb values (from 0 to 1)
+/vis/geometry/set/colour logicShield1 1 0.6 0.6 0.6 1
+/vis/geometry/set/colour logicShield2 1 0.7 0.4 0.1 1
+/vis/geometry/set/colour logicShield3 1 0.2 0.2 0.2 1
+/vis/geometry/set/colour logicShield3 1 0.2 0.2 0.2 1
+/vis/geometry/set/colour logicWindow 1 1 0.34 0.2 1
+
+#/gun/particle proton
+#/vis/ogl/set/displayListLimit 500000
