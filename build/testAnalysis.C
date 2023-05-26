@@ -31,7 +31,7 @@ void backgroundScaling(TH1F *bckgHist, int &bckgEntries, int gammaEntries, doubl
 
 
 
-void peakFitting(int binNumber, TH1F *bckgHist, double bckgCounts[], int simBckgEntries, double timeFinal, bool drawBool, bool saveBool) //timeFinal in MINUTES
+unordered_map<string, double> peakFitting(int binNumber, TH1F *bckgHist, double bckgCounts[], int simBckgEntries, double timeFinal, bool drawBool, bool saveBool) //timeFinal in MINUTES
 {
 	auto simTimeCut = [timeFinal](double time){return (time < timeFinal);};
 	RDataFrame df = ROOT::RDF::MakeCsvDataFrame("gammaData.csv"); 
@@ -103,6 +103,7 @@ void peakFitting(int binNumber, TH1F *bckgHist, double bckgCounts[], int simBckg
 	pm->SetMarkerStyle(23);
 	pm->SetMarkerColor(kRed);
 	pm->SetMarkerSize(1.3);
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~GAUSSIAN FITS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 	Double_t FitStart1 = 31;
 	Double_t FitEnd1 = 35.2;	
@@ -123,6 +124,9 @@ void peakFitting(int binNumber, TH1F *bckgHist, double bckgCounts[], int simBckg
 
 	deconvHist->Fit(f1, "N","0", FitStart1, FitEnd1);
 	deconvHist->Fit(f2, "N","0", FitStart2, FitEnd2);
+
+	double gaussDev33 = f1->GetParameter(2);
+	double gaussDev166 = f2->GetParameter(2);
 
 	/*Double_t gaussHeight = f1->GetParameter(0);
 	Double_t gaussMean = f1->GetParameter(1);
@@ -183,6 +187,14 @@ void peakFitting(int binNumber, TH1F *bckgHist, double bckgCounts[], int simBckg
 		string fileName = percentString + "histo" + timeString + ".png";
 		dualCanvas->Print(fileName.c_str());
 	}
+
+	unordered_map<string, double> statMap;
+	statMap["Sigma33"] =  gaussDev33;
+	statMap["Sigma166"] = gaussDev166;
+	statMap["PeaksFound"] = peaksFound;
+	
+	return statMap;
+
 }
 
 
@@ -216,16 +228,63 @@ void testAnalysis()
 	}
 	cout << "Simulation bckg entries are: " << simBckgEntries << endl;
 
+//###############################RUNNING SCRIPT######################################//
 
-	double runTime = 60.0; //IN MINUTES
-	peakFitting(simBinNumber, simBackgroundHist, bckgCounts, simBckgEntries, runTime, true, false);
-	runTime = 45.0;
-	peakFitting(simBinNumber, simBackgroundHist, bckgCounts, simBckgEntries, runTime, true, false);
-	runTime = 30.0;
-	peakFitting(simBinNumber, simBackgroundHist, bckgCounts, simBckgEntries, runTime, true, false);
-	runTime = 15.0;
-	peakFitting(simBinNumber, simBackgroundHist, bckgCounts, simBckgEntries, runTime, true, false);
-	runTime = 5.0;
-	peakFitting(simBinNumber, simBackgroundHist, bckgCounts, simBckgEntries, runTime, true, false);
+	double runTime; //IN MINUTES
+	vector<double> Times;
+	vector<double> Sigma33;
+	vector<double> Sigma166;
+	vector<double> PeaksFound;
+	unordered_map<string, double> statMap;
 
+	double upperTime = 60.0;
+	double incrementSize = 5.0;
+	
+	for(int i=incrementSize; i<=upperTime; i+=incrementSize)
+	{
+		statMap = peakFitting(simBinNumber, simBackgroundHist, bckgCounts, simBckgEntries, i, false, false);
+
+		Times.push_back(i);
+		Sigma33.push_back(statMap["Sigma33"]);
+		Sigma166.push_back(statMap["Sigma166"]);
+		PeaksFound.push_back(statMap["PeaksFound"]);
+	}
+
+//###############################DRAWING######################################//
+
+	TCanvas *canvas = new TCanvas("canvas", "Plot", 800, 600);
+	TGraph *graph33 = new TGraph(Times.size(), Times.data(), Sigma33.data());
+	TGraph *graph166 = new TGraph(Times.size(), Times.data(), Sigma166.data());
+	//graph33->SetTitle("33keV Sigma");
+	graph33->SetMarkerStyle(20);
+	graph33->SetMarkerColor(kBlue);
+
+	graph166->SetMarkerStyle(20);
+	graph166->SetMarkerColor(kRed);
+	graph166->GetXaxis()->SetTitle("Time (min)");
+	graph166->GetYaxis()->SetTitle("Sigma");
+	graph166->GetYaxis()->SetRangeUser(0,1.5);
+	graph166->SetTitle("Sigma vs. Time (Red : 166keV, Blue : 33keV)");
+
+
+	canvas->cd();
+	graph166->Draw("AP");
+	graph33->Draw("P");
+
+	for(int i=0; i < upperTime/incrementSize; i++) //DRAWS GREEN OUTLINES 
+	{
+		if (PeaksFound[i] == 2)
+		{
+			TMarker *tm33 = new TMarker(graph33->GetX()[i], graph33->GetY()[i], 24);
+			tm33->SetMarkerSize(1.5);
+			tm33->SetMarkerColor(kGreen);
+			tm33->Draw();
+
+			TMarker *tm166 = new TMarker(graph166->GetX()[i], graph166->GetY()[i], 24);
+			tm166->SetMarkerSize(1.5);
+			tm166->SetMarkerColor(kGreen);
+			tm166->Draw();
+		}
+	}
+	canvas->Update();
 }
