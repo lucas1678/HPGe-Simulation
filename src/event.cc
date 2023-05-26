@@ -21,12 +21,15 @@ void MyEventAction::EndOfEventAction(const G4Event*)
 	auto analysisManager = G4AnalysisManager::Instance();
 
 	fEdep = fEdep*1000;
+	//if(fEdep!=0){G4cout << "fEdep is: " << fEdep << G4endl;}
+	
 	G4double quantumChance = QuantumEffFunction(fEdep);
 	if(fEdep > 1 && G4UniformRand() <= quantumChance)
 	{
 		fEdep = G4RandGauss::shoot(fEdep, ResolutionFunction(fEdep));
 
 		analysisManager->FillNtupleDColumn(0,0,fEdep);
+		analysisManager->FillNtupleDColumn(0,1,fTime);
 		analysisManager->AddNtupleRow(0);
 	}
 }

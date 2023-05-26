@@ -11,6 +11,9 @@ MyDetectorConstruction::MyDetectorConstruction()
 	fMessenger->DeclareProperty("detRadius", detRadius, "Radius of detector arrangement").SetUnit("mm");
 	detRadius = 100.*mm;
 
+	fMessenger->DeclareProperty("sourceHeight", sourceHeight, "Height of the radioactive source (z-level)").SetUnit("mm");
+	sourceHeight = 0.*mm;
+
 	fMessenger->DeclareProperty("worldMatChoice", worldMatChoice, "Material Between Detector and Source");
 	worldMatChoice = "G4_AIR";
 

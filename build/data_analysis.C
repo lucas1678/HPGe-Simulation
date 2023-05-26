@@ -1,10 +1,46 @@
+using namespace ROOT;
+
+void backgroundScaling(TH1F *bckgHist, int &bckgEntries, ROOT::RDF::RResultPtr<TH1D> gammaHist, int gammaEntries, double bckgPercent, int simBinNumber, double bckgCounts[])
+{
+	//need & in front of bckgEntries so that function actually changes the bckgEntries variable instead of making a copy of it that exists only inside this function!
+	double bckgScaling = (bckgPercent/(1-bckgPercent))*((double)gammaEntries/(double)bckgEntries);
+	int targetEntries = bckgScaling*bckgEntries;
+	cout << "targetEntries: " << targetEntries << endl;
+	
+	int n=0;
+	while(1)
+	{
+		bckgEntries = 0;
+		for (int i=0; i<simBinNumber+2; i++)
+		{
+			bckgHist->SetBinContent(i, (bckgScaling+0.001*n)*(bckgHist->GetBinContent(i)));
+			bckgEntries+=bckgHist->GetBinContent(i);
+		}
+		//cout << "In loop, bckg entries are now: " << simBckgEntries << endl;
+		
+		if (bckgEntries > targetEntries) {break;}
+		
+		bckgEntries = 0;
+		for (int i=0; i<simBinNumber+2; i++)
+		{
+			bckgHist->SetBinContent(i, bckgCounts[i]);
+			bckgEntries+=bckgHist->GetBinContent(i);
+		}
+		//cout << "In loop WITH RESET, bckg entries are now: " << simBckgEntries << endl;
+		n++;
+	}
+}
+
 void data_analysis()
 {
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~DECLARING HISTOGRAMS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	int comparisonBinNumber = 1000;	//922
 	int simBinNumber = 1000;
-
-	TH1F *simGammaHist = new TH1F("simGammaHist", "Just Gamma", simBinNumber, 0, 400); 
+	double timeFinal = 60.0; //minutes //MAKE IT EQUAL RUNTIME BELOW IN BCKG SCALING
+	auto simTimeCut = [timeFinal](double time){return (time < timeFinal);}; //lambda function
+	//TH1F *simGammaHist = new TH1F("simGammaHist", "Just Gamma", simBinNumber, 0, 400);
+	RDataFrame df = ROOT::RDF::MakeCsvDataFrame("gammaData.csv"); //BARELY ANY DOCUMENTATION ON THIS... ROOT HAS OUTDATED INFO ON ROOT::RDF::FromCSV which does NOT work anymore.... >:(
+	auto simGammaHist = df.Filter(simTimeCut, {"runTime"}).Histo1D({"gamma", "SimGammaHist;Energy[keV];Counts", simBinNumber, 0, 400}, "fEdep"); //TH1DModel (const char *name, const char *title, int nbinsx, double xlow, double xup) 
 	TH1F *simBackgroundHist = new TH1F("simBackgroundHist", "SimBckg", simBinNumber, 0, 400);
 	TH1F *simTotalHist = new TH1F("simTotalHist", "Simulated Spectrum", simBinNumber, 0, 400);
 	TH1F *comparisonHist = new TH1F("comparisonHist", "Real Spectrum", comparisonBinNumber, 0, 400);
@@ -15,14 +51,14 @@ void data_analysis()
 	double value;
 	fstream file;
 
-	file.open("gammaData.txt", ios::in);
+	/*file.open("gammaData.txt", ios::in);
 	while(1)
 	{
 		file >> value;
 		simGammaHist->Fill(value);
 		if(file.eof()) break;
 	}
-	file.close();
+	file.close();*/
 	
 
 	file.open("realBackground.txt", ios::in);
@@ -99,41 +135,13 @@ void data_analysis()
 	}*/
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FIRST BCKG SCALING~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	double percentBckg = 0.2127; //, , 0.0855549, 0.0883125	0.0883125 from excel
-	double bckgScaling = (percentBckg/(1-percentBckg))*((double)simGammaEntries/(double)simBckgEntries);
-	int targetEntries = bckgScaling*simBckgEntries;
-	cout << "targetEntries: " << targetEntries << endl;
-	
-	int n=0;
-	while(1)
-	{
-		simBckgEntries = 0;
-		for (int i=0; i<simBinNumber+2; i++)
-		{
-			simBackgroundHist->SetBinContent(i, (bckgScaling+0.001*n)*(simBackgroundHist->GetBinContent(i)));
-			simBckgEntries+=simBackgroundHist->GetBinContent(i);
-		}
-		//cout << "In loop, bckg entries are now: " << simBckgEntries << endl;
-		
-		if (simBckgEntries > targetEntries) break;
-		
-		simBckgEntries = 0;
-		for (int i=0; i<simBinNumber+2; i++)
-		{
-			simBackgroundHist->SetBinContent(i, bckgCounts[i]);
-			simBckgEntries+=simBackgroundHist->GetBinContent(i);
-		}
-		//cout << "In loop WITH RESET, bckg entries are now: " << simBckgEntries << endl;
-		n++;
-	}
-	cout << "Scaled bckg counts are now: " << simBckgEntries << endl;
-	/*simBckgEntries = 0;
-	for (int i=0; i<simBinNumber+2; i++)
-	{
-		simBackgroundHist->SetBinContent(i, bckgScaling*(simBackgroundHist->GetBinContent(i)));
-		simBckgEntries+=simBackgroundHist->GetBinContent(i);
-	}
-	cout << "BckgCounts are now: " << simBckgEntries << endl;*/
+	double runTime = 60; //in minutes
+	double bckgActivity = 32.4295998; //counts per min
+	double percentBckg = (bckgActivity*runTime)/((bckgActivity*runTime) + simGammaEntries);
+	cout << "The percent bckg is: " << percentBckg << endl;	
+	//double percentBckg = 0.0; //, , 0.0855549, 0.0883125	0.0883125 from excel
+	backgroundScaling(simBackgroundHist, simBckgEntries, simGammaHist, simGammaEntries, percentBckg, simBinNumber, bckgCounts);
+	cout << "Scaled bckg counts are nowww: " << simBckgEntries << endl;
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FINE BCKG SCALE ADJUSTMENTS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	/*int n = 0;	
@@ -183,6 +191,7 @@ void data_analysis()
 	//simTotalHist->GetXaxis()->SetRangeUser(0,900);
 	peaksFound = s->SearchHighRes(finalBinCounts, dest, simBinNumber, 6, 10, kTRUE, 100, kTRUE, 3);
 	// above goes like (...,sigma,threshold,bckgRemove,iterations,markovON/OFF, averWindow)
+	// …The value in the center of the peak value[i] minus the average value in two symmetrically positioned channels (channels i-3*sigma, i+3*sigma) must be greater than threshold. Otherwise the peak is ignored…
 	Double_t *xpeaks = s->GetPositionX();
 	Double_t a;
 	Int_t bin;
@@ -191,7 +200,7 @@ void data_analysis()
 	for (int i = 0; i < peaksFound; i++) 
 	{
 		a=xpeaks[i];
-		bin = 1 + Int_t(a + 0.5);
+		bin = 0 + Int_t(a + 0.5);
 		fPositionX[i] = simTotalHist->GetBinCenter(bin);
 		fPositionY[i] = simTotalHist->GetBinContent(bin);
 		
@@ -268,7 +277,11 @@ void data_analysis()
 	gaussMean = f2->GetParameter(1);
 	gaussDev = f2->GetParameter(2);
 	cout << "Height: " << gaussHeight << "\nMean: " << gaussMean << "\nDev: " << gaussDev << endl;
-
+	//backgroundScaling(simGammaHist);
+	
+	cout << "simBckgEntries: " << simBckgEntries << endl;
+	//testing(simBckgEntries);
+	cout << "Now, simBckgEntries: " << simBckgEntries << endl;
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~INTEGRATION!!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /*int bmin = comparisonNoBckg->GetXaxis()->FindBin(117.5);
@@ -289,6 +302,18 @@ cout << "Total Integral is: " << comparisonNoBckg->Integral(bmin,bmax) << endl;*
 	f2->SetLineStyle(1);
 	f2->Draw("SAME");
 	//deconvHist->Draw("SAME");
+
+	TCanvas *c2 = new TCanvas();
+	deconvHist->Draw();
+	f1->SetLineStyle(1);
+	f1->SetLineColor(1);
+	f1->Draw("SAME");
+	f2->SetLineStyle(1);
+	f2->SetLineColor(1);
+	f2->Draw("SAME");
+
+
+
 	string percentString = to_string(percentBckg);
 	percentString.erase ( percentString.find_last_not_of('0') + 1, std::string::npos );
 	percentString.erase ( percentString.find_last_not_of('.') + 1, std::string::npos );
@@ -307,4 +332,3 @@ cout << "Total Integral is: " << comparisonNoBckg->Integral(bmin,bmax) << endl;*
 	c3->cd();
 	simGammaHist->Draw();*/
 }
-

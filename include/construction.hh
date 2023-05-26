@@ -32,7 +32,7 @@ public:
 
 private:
 	G4GenericMessenger *fMessenger;
-	G4double detLength, detRadius, detOffset;
+	G4double detLength, detRadius, detOffset, sourceHeight;
 	G4String worldMatChoice, windowMatChoice;
 	G4bool spawnBackWall, spawnWindow;
 	G4LogicalVolume *fScoringVolume;

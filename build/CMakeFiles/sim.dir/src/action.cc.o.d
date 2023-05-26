@@ -475,54 +475,6 @@ CMakeFiles/sim.dir/src/action.cc.o: \
  /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4UserTrackingAction.hh \
  /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4RunManagerKernel.hh \
  /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4PhysicsOrderedFreeVector.hh \
- /home/lbackes/geant4/geant4-v11.0.1/projects/barium_project/include/construction.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4VUserDetectorConstruction.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4VPhysicalVolume.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4LogicalVolume.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Box.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4GeomTypes.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4GeomConfig.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4CSGSolid.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Polyhedron.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/HepPolyhedron.h \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4TwoVector.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/CLHEP/Vector/TwoVector.h \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/CLHEP/Vector/TwoVector.icc \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Point3D.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Normal3D.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Visible.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Visible.icc \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Box.icc \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4PVPlacement.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4NistManager.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4NistElementBuilder.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4NistMaterialBuilder.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4ICRU90StoppingData.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Pow.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Tubs.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Tubs.icc \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4OpticalSurface.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Physics2DVector.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Physics2DVector.icc \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4SurfaceProperty.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4LogicalBorderSurface.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4LogicalSurface.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4LogicalSurface.icc \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4LogicalBorderSurface.icc \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4LogicalSkinSurface.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4LogicalSkinSurface.icc \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Trap.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Trap.icc \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4GenericMessenger.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4AnyType.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4AnyMethod.hh \
- /home/lbackes/geant4/geant4-v11.0.1/projects/barium_project/include/detector.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4VSensitiveDetector.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4VHit.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4VReadOutGeometry.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4SensitiveVolumeList.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4CollectionNameVector.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4VSDFilter.hh \
  /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4AnalysisManager.hh \
  /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4GenericAnalysisManager.hh \
  /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4ToolsAnalysisManager.hh \
@@ -583,10 +535,64 @@ CMakeFiles/sim.dir/src/action.cc.o: \
  /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4GenericAnalysisManager.icc \
  /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4GenericFileManager.hh \
  /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4GenericFileManager.icc \
+ /home/lbackes/geant4/geant4-v11.0.1/projects/barium_project/include/construction.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4VUserDetectorConstruction.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4VPhysicalVolume.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4LogicalVolume.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Box.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4GeomTypes.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4GeomConfig.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4CSGSolid.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Polyhedron.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/HepPolyhedron.h \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4TwoVector.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/CLHEP/Vector/TwoVector.h \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/CLHEP/Vector/TwoVector.icc \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Point3D.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Normal3D.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Visible.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Visible.icc \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Box.icc \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4PVPlacement.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4NistManager.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4NistElementBuilder.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4NistMaterialBuilder.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4ICRU90StoppingData.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Pow.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Tubs.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Tubs.icc \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4OpticalSurface.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Physics2DVector.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Physics2DVector.icc \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4SurfaceProperty.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4LogicalBorderSurface.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4LogicalSurface.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4LogicalSurface.icc \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4LogicalBorderSurface.icc \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4LogicalSkinSurface.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4LogicalSkinSurface.icc \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Trap.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Trap.icc \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4GenericMessenger.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4AnyType.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4AnyMethod.hh \
+ /home/lbackes/geant4/geant4-v11.0.1/projects/barium_project/include/detector.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4VSensitiveDetector.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4VHit.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4VReadOutGeometry.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4SensitiveVolumeList.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4CollectionNameVector.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4VSDFilter.hh \
  /home/lbackes/geant4/geant4-v11.0.1/projects/barium_project/include/event.hh \
  /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4UserEventAction.hh \
  /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Event.hh \
  /usr/include/c++/8/math.h \
  /home/lbackes/geant4/geant4-v11.0.1/projects/barium_project/include/run.hh \
  /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4UserRunAction.hh \
- /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Run.hh
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Run.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Timer.hh \
+ /usr/include/sys/times.h /usr/include/unistd.h \
+ /usr/include/bits/posix_opt.h /usr/include/bits/environments.h \
+ /usr/include/bits/confname.h /usr/include/bits/getopt_posix.h \
+ /usr/include/bits/getopt_core.h \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Timer.icc
