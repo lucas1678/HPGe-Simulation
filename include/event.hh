@@ -20,10 +20,12 @@ public:
 	
 	void AddEdep(G4double edep) { fEdep += edep; }
 	void AddTotalE(G4double totalE) { fTotalE += totalE; }
+	void Get_fTime(G4double time){fTime = time;}
 
 private:
 	G4double fEdep;
-	G4double fTotalE;
+	G4double fTotalE;	
+	G4double fTime;
 
 	
 	G4double ResolutionFunction(G4double energy);

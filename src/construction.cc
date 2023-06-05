@@ -9,7 +9,7 @@ MyDetectorConstruction::MyDetectorConstruction()
 	detLength = 80.*mm;
 
 	fMessenger->DeclareProperty("detRadius", detRadius, "Radius of detector arrangement").SetUnit("mm");
-	detRadius = 100.*mm;
+	detRadius = 70.*mm;
 
 	fMessenger->DeclareProperty("worldMatChoice", worldMatChoice, "Material Between Detector and Source");
 	worldMatChoice = "G4_AIR";
@@ -84,6 +84,31 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 	mptShield3->AddProperty("RINDEX", energy, rindexShield3, 2);
 	shieldMat3->SetMaterialPropertiesTable(mptShield3);
 
+	G4Material *probeMat = nist->FindOrBuildMaterial("G4_Cu");
+	G4MaterialPropertiesTable *mptProbe = new G4MaterialPropertiesTable();
+	G4double rindexProbe[2] = {1.0, 1.0}; //change? probe shouldnt be repulsive
+	//G4double energy[2] = {2.038*eV, 4.144*eV};
+	mptProbe->AddProperty("RINDEX", energy, rindexProbe, 2);
+	probeMat->SetMaterialPropertiesTable(mptProbe);
+
+	G4MaterialPropertiesTable *mptintersectMat = new G4MaterialPropertiesTable();
+	G4double rindexintersectMat[2] = {1.0,1.0};
+	mptintersectMat->AddProperty("RINDEX", energy, rindexintersectMat, 2);
+
+	Mn = nist->FindOrBuildElement("Mn");
+	Si = nist->FindOrBuildElement("Si");
+	Cr = nist->FindOrBuildElement("Cr");
+	Ni = nist->FindOrBuildElement("Ni");
+	Fe = nist->FindOrBuildElement("Fe");
+	intersectMat = new G4Material("intersectMat", 8.03*g/cm3, 5);
+	intersectMat->AddElement(Mn, 0.02*perCent);
+	intersectMat->AddElement(Si, 0.01*perCent);
+	intersectMat->AddElement(Cr, 0.19*perCent);
+	intersectMat->AddElement(Ni, 0.10*perCent);
+	intersectMat->AddElement(Fe, 0.68*perCent);
+ 
+	intersectMat->SetMaterialPropertiesTable(mptintersectMat); //stainless steel
+
 	G4Material *xeMat = nist->FindOrBuildMaterial("G4_Xe");
 
 	G4Material *windowMat = nullptr;
@@ -93,22 +118,73 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 	G4double rindexWindow[2] = {1.0, 1.0};
 	mptWindowMat->AddProperty("RINDEX", energy, rindexWindow, 2);
 	windowMat->SetMaterialPropertiesTable(mptWindowMat);
+
+	G4RotationMatrix *RotProbe = new G4RotationMatrix();
+	RotProbe->rotateX(90.*deg);
+	RotProbe->rotateY(0.*deg);
+	RotProbe->rotateZ(0.*deg);
+
 	
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 //~~~~~~~~~~~~~~~~~~~~~~~WORLD~~~~~~~~~~~~~~~~~~~~~~~~~//
 
-	solidWorld = new G4Box("solidWorld", 0.5*m, 0.5*m, 0.5*m);
+	solidWorld = new G4Box("solidWorld", 2.*m, 2.*m, 3.*m);
 	logicWorld = new G4LogicalVolume(solidWorld, worldMat, "logicWorld");
-	physWorld = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.), logicWorld, "physWorld", 0, false, 0, true);
+	physWorld = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.*m), logicWorld, "physWorld", 0, false, 0, true);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+//~~~~~~~~~~~~~~~~~~~~~~~~HOLLOW SPHERE~~~~~~~~~~~~~~~~~~~~~~//
+
+	G4Sphere *solidShell = new G4Sphere("solidShell", 0.15*m, 0.16*m, 0, 360, 0, 360);
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+//~~~~~~~~~~~~~~~~~~~~~~~~CUBE~~~~~~~~~~~~~~~~~~~~~~//
+
+	G4Box *solidCube = new G4Box("solidCube", 0.124*m, 0.124*m, 0.124*m);
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+//~~~~~~~~~~~~~~~~~~~~~~~~INTERSECTION~~~~~~~~~~~~~~~~~~~~~~//
+
+	solidIntersect = new G4IntersectionSolid("Cube&&Shell", solidCube, solidShell);
+	logicIntersect = new G4LogicalVolume(solidIntersect, intersectMat, "logicIntersect");
+	physIntersect = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.), logicIntersect, "physIntersect", logicWorld, false, 0, true); 
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+//~~~~~~~~~~~~~~~~~~~~~~~PROBE~~~~~~~~~~~~~~~~~~~~~~//
+
+	solidProbe = new G4Tubs("solidArmOut", 0.0117*m, 0.0127*m, 1.0597*m, 0*deg, 360*deg);
+	logicProbe = new G4LogicalVolume(solidProbe, probeMat, "logicProbe");
+	physProbe = new G4PVPlacement(RotProbe, G4ThreeVector(0.,1.07*m,0.), logicProbe, "physProbe", logicWorld, false, 0, true);
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+//~~~~~~~~~~~~~~~~~~~~~~~~OUTERMOUNT~~~~~~~~~~~~~~~~~~~~~~//
+
+	solidOuterMount = new G4Tubs("solidOuterMount", 0.07*m, 0.1135*m, 0.1135*m, 0*deg, 360*deg);
+	logicOuterMount = new G4LogicalVolume(solidOuterMount, intersectMat, "logicOuterMount");
+	physOuterMount = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.247*m), logicOuterMount, "physOuterMount", logicWorld, false, 0, true);
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+//~~~~~~~~~~~~~~~~~~~~~~~DETECTOR ARM OUT OUTER~~~~~~~~~~~~~~~~~~~~~~//
+
+	solidArmOut = new G4Tubs("solidArmOut", 0.07*m, 0.08*m, 0.4396*m, 0*deg, 360*deg); //inner radius, outer radius, length, starting and stopping angle
+	logicArmOut = new G4LogicalVolume(solidArmOut, intersectMat, "logicArmOut");
+	physArmOut = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.80*m /*half of arm length+half of cube length */), logicArmOut, "physArmOut", logicWorld, false, 0, true);
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+//~~~~~~~~~~~~~~~~~~~~~~~DETECTOR ARM XENON~~~~~~~~~~~~~~~~~~~~~~//
+
+	solidArmIn = new G4Tubs("solidArmIn", 0.*m, 0.07*m, 0.56*m, 0*deg, 360*deg); //inner radius, outer radius, length, starting and stopping angle
+	logicArmIn = new G4LogicalVolume(solidArmIn, xeMat, "logicArmIn");
+	physArmIn = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.68*m /*half of arm length+half of cube length */), logicArmIn, "physArmIn", logicWorld, false, 0, true);
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~// //replace mother volume with Arm?
 //~~~~~~~~~~~~~~~~~~~~~~~DETECTOR~~~~~~~~~~~~~~~~~~~~~~//
-	detOffset = 10.*mm;
+	detOffset = 7.*mm;
 
 	solidDet = new G4Tubs("solidDet", 0*mm, detRadius, detLength - detOffset, 0*deg, 360*deg); //inner radius, outer radius, length, starting and stopping angle
 	logicDet = new G4LogicalVolume(solidDet, detMat, "logicDet");
-	physDet = new G4PVPlacement(0, G4ThreeVector(0.,0.,7.*cm - detOffset + detLength/2), logicDet, "physDet", logicWorld, false, 0, true);
+	physDet = new G4PVPlacement(0, G4ThreeVector(0.,0.,1.17*m - detOffset + detLength/2), logicDet, "physDet", logicWorld, false, 0, true);
 
 	fScoringVolume = logicDet;
 	//G4cout << "DETECTOR DISTANCEEEEEEE" << 3.4*cm - detOffset + detLength/2 << G4endl;
@@ -117,25 +193,25 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
 	solidShield1 = new G4Tubs("solidShield1", detRadius, detRadius + 5.*mm, detLength, 0*deg, 360*deg); //inner radius, outer radius, length, starting and stopping angle
 	logicShield1 = new G4LogicalVolume(solidShield1, shieldMat1, "logicShield1");
-	physShield = new G4PVPlacement(0, G4ThreeVector(0.,0.,7.*cm + detLength/2), logicShield1, "physShield1", logicWorld, false, 0, true);
+	physShield = new G4PVPlacement(0, G4ThreeVector(0.,0.,1.17*m + detLength/2), logicShield1, "physShield1", logicWorld, false, 0, true);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 //~~~~~~~~~~~~~~~~~~~~~Cu Cylinder~~~~~~~~~~~~~~~~~~~~//
 
 	solidShield2 = new G4Tubs("solidShield2", detRadius + 5.*mm, detRadius + 10.*mm, detLength, 0*deg, 360*deg); //inner radius, outer radius, length, starting and stopping angle
 	logicShield2 = new G4LogicalVolume(solidShield2, shieldMat2, "logicShield2");
-	physShield2 = new G4PVPlacement(0, G4ThreeVector(0.,0.,7.*cm + detLength/2), logicShield2, "physShield2", logicWorld, false, 0, true);
+	physShield2 = new G4PVPlacement(0, G4ThreeVector(0.,0.,1.17*m + detLength/2), logicShield2, "physShield2", logicWorld, false, 0, true);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 //~~~~~~~~~~~~~~~~~~~~~Pb Cylinder~~~~~~~~~~~~~~~~~~~~//
 
 	solidShield3 = new G4Tubs("solidShield3", detRadius + 10.*mm, detRadius + 15.*mm, detLength, 0*deg, 360*deg); //inner radius, outer radius, length, starting and stopping angle
 	logicShield3 = new G4LogicalVolume(solidShield3, shieldMat3, "logicShield3");
-	physShield3 = new G4PVPlacement(0, G4ThreeVector(0.,0.,7.*cm + detLength/2), logicShield3, "physShield3", logicWorld, false, 0, true);
+	physShield3 = new G4PVPlacement(0, G4ThreeVector(0.,0.,1.17*m + detLength/2), logicShield3, "physShield3", logicWorld, false, 0, true);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 //~~~~~~~~~~~~~~~~~~~~Xe BOX~~~~~~~~~~~~~~~~~~~~~~~~~~//
-	solidXeBox = new G4Box("solidXeBox", 10.*mm, 10.*mm, 10.*mm);
+	solidXeBox = new G4Box("solidXeBox", 0.08*m, 0.08*m, 0.08*m);
 	logicXeBox = new G4LogicalVolume(solidXeBox, xeMat, "logicXeBox");
 	physXeBox = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.), logicXeBox, "physXeBox", logicWorld, false, 0, true);
 
@@ -143,9 +219,9 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 //~~~~~~~~~~~~~~~~~~~~Window~~~~~~~~~~~~~~~~~~~~~~~~~~//
 	if(spawnWindow == true)
 	{
-		solidWindow = new G4Tubs("solidWindow", 0.*mm, 80.*mm, 0.5*mm, 0*deg, 360*deg); //inner radius, outer radius, length, starting and stopping angle
+		solidWindow = new G4Tubs("solidWindow", 0.*mm, 60.*mm, 0.5*mm, 0*deg, 360*deg); //inner radius, outer radius, length, starting and stopping angle
 		logicWindow = new G4LogicalVolume(solidWindow, windowMat, "logicWindow");
-		physWindow = new G4PVPlacement(0, G4ThreeVector(0.,0.,11.*mm), logicWindow, "physWindow", logicWorld, false, 0, true);
+		physWindow = new G4PVPlacement(0, G4ThreeVector(0.,0.,1.13*m ), logicWindow, "physWindow", logicWorld, false, 0, true);
 	}
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 //~~~~~~~~~~~~~~~~~~~~BACKWALL~~~~~~~~~~~~~~~~~~~~~~~~//
@@ -155,9 +231,8 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 		G4Box *solidTest = new G4Box("solidTest", 0.4*m, 0.4*m, 0.04*m);
 		G4LogicalVolume *logicTest = new G4LogicalVolume(solidTest, detMat, "logicTest");
 		G4VPhysicalVolume *physTest = new G4PVPlacement(0, G4ThreeVector(0.,0.,-12.*cm), logicTest, "physTest", logicWorld, false, 0, true);
+
 	}
-
-
 
 
 	/*G4OpticalSurface* OpWaterSurface = new G4OpticalSurface("WaterSurface");

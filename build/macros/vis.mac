@@ -14,13 +14,21 @@
 /vis/geometry/set/forceSolid logicShield3  #lead
 /vis/geometry/set/forceSolid logicTest     #wall
 /vis/geometry/set/forceSolid logicWindow  #Window
+/vis/geometry/set/forceSolid logicIntersect #Intersection
+/vis/geometry/set/forceSolid logicProbe #probe
+/vis/geometry/set/forceSolid logicArmOut #arm
+/vis/geometry/set/forceSolid logicOuterMount #arm
 
 /vis/geometry/set/colour logicDet 1 0.8 0 0.8 1     #middle three numbers are rgb values (from 0 to 1)
 /vis/geometry/set/colour logicShield1 1 0.6 0.6 0.6 1
 /vis/geometry/set/colour logicShield2 1 0.7 0.4 0.1 1
 /vis/geometry/set/colour logicShield3 1 0.2 0.2 0.2 1
 /vis/geometry/set/colour logicShield3 1 0.2 0.2 0.2 1
-/vis/geometry/set/colour logicWindow 1 1 0.34 0.2 1
+/vis/geometry/set/colour logicWindow 1 0.99 0.85 0.72 1
+/vis/geometry/set/colour logicIntersect 1 0.76 0.76 0.76 1
+/vis/geometry/set/colour logicProbe  1 0.44 0.21 0.13 1 
+/vis/geometry/set/colour logicArmOut 1 0.39 0.39 0.39 1
+/vis/geometry/set/colour logicOuterMount 1 0.39 0.39 0.39 1
 
 #/gun/particle proton
 #/vis/ogl/set/displayListLimit 500000

@@ -2,4 +2,4 @@
 /gps/direction 0 0 1 #momentum direction
 /gps/energy 2 MeV
 
-/run/beamOn 50
+/run/beamOn 500

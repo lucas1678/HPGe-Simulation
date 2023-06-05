@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/lbackes/geant4/geant4-v11.0.1/projects/barium_project
+CMAKE_SOURCE_DIR = /home/icasandjian/geant4/geant4-v11.0.2/examples/projects/bariumProject/HPGe-Simulation
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/lbackes/geant4/geant4-v11.0.1/projects/barium_project/build
+CMAKE_BINARY_DIR = /home/icasandjian/geant4/geant4-v11.0.2/examples/projects/bariumProject/HPGe-Simulation/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -87,9 +87,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lbackes/geant4/geant4-v11.0.1/projects/barium_project/build/CMakeFiles /home/lbackes/geant4/geant4-v11.0.1/projects/barium_project/build//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/icasandjian/geant4/geant4-v11.0.2/examples/projects/bariumProject/HPGe-Simulation/build/CMakeFiles /home/icasandjian/geant4/geant4-v11.0.2/examples/projects/bariumProject/HPGe-Simulation/build//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lbackes/geant4/geant4-v11.0.1/projects/barium_project/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/icasandjian/geant4/geant4-v11.0.2/examples/projects/bariumProject/HPGe-Simulation/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -128,19 +128,6 @@ sim: cmake_check_build_system
 sim/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sim.dir/build.make CMakeFiles/sim.dir/build
 .PHONY : sim/fast
-
-#=============================================================================
-# Target rules for targets named BariumSimulation
-
-# Build rule for target.
-BariumSimulation: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 BariumSimulation
-.PHONY : BariumSimulation
-
-# fast build rule for target.
-BariumSimulation/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/BariumSimulation.dir/build.make CMakeFiles/BariumSimulation.dir/build
-.PHONY : BariumSimulation/fast
 
 sim.o: sim.cc.o
 .PHONY : sim.o
@@ -366,7 +353,6 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... BariumSimulation"
 	@echo "... sim"
 	@echo "... sim.o"
 	@echo "... sim.i"

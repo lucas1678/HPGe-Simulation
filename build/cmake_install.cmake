@@ -1,4 +1,4 @@
-# Install script for directory: /home/lbackes/geant4/geant4-v11.0.1/projects/barium_project
+# Install script for directory: /home/icasandjian/geant4/geant4-v11.0.2/examples/projects/bariumProject/HPGe-Simulation
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/lbackes/geant4/geant4-v11.0.1/projects/barium_project/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/icasandjian/geant4/geant4-v11.0.2/examples/projects/bariumProject/HPGe-Simulation/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
