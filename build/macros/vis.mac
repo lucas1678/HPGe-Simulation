@@ -18,6 +18,7 @@
 /vis/geometry/set/forceSolid logicProbe #probe
 /vis/geometry/set/forceSolid logicArmOut #arm
 /vis/geometry/set/forceSolid logicOuterMount #arm
+/vis/geometry/set/forceSolid logicTip #tipofprobe
 
 /vis/geometry/set/colour logicDet 1 0.8 0 0.8 1     #middle three numbers are rgb values (from 0 to 1)
 /vis/geometry/set/colour logicShield1 1 0.6 0.6 0.6 1
@@ -29,6 +30,7 @@
 /vis/geometry/set/colour logicProbe  1 0.44 0.21 0.13 1 
 /vis/geometry/set/colour logicArmOut 1 0.39 0.39 0.39 1
 /vis/geometry/set/colour logicOuterMount 1 0.39 0.39 0.39 1
+/vis/geometry/set/colour logicTip 1 0.44 0.21 0.13 1 
 
 #/gun/particle proton
 #/vis/ogl/set/displayListLimit 500000

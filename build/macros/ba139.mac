@@ -7,4 +7,4 @@
 /gps/pos/shape Sphere  #spawn isotopes in spherical volume 
 /gps/pos/centre 0 0 0 #centre of volume source
 /gps/pos/radius 1 cm  #radius of source sphere
-/run/beamOn 10
+/run/beamOn 10000000

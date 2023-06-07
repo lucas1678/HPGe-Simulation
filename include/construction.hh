@@ -45,10 +45,10 @@ private:
 	G4LogicalVolume *fScoringVolume;
 	
 	G4Box *solidAtmosphere, *solidWorld, *solidXeBox;
-	G4LogicalVolume *logicDet, *logicAtmosphere[10], *logicWorld, *logicShield1, *logicShield2, *logicShield3, *logicXeBox, *logicWindow, *logicSubtract, *logicIntersect, *logicProbe, *logicArmOut, *logicArmIn, *logicOuterMount;
-	G4VPhysicalVolume *physAtmosphere[10], *physWorld, *physDet, *physShield, *physShield2, *physShield3, *physXeBox, *physWindow, *physSubtract, *physIntersect,*physProbe, *physArmOut, *physArmIn, *physOuterMount;
+	G4LogicalVolume *logicDet, *logicAtmosphere[10], *logicWorld, *logicShield1, *logicShield2, *logicShield3, *logicXeBox, *logicWindow, *logicSubtract, *logicIntersect, *logicProbe, *logicArmOut, *logicArmIn, *logicOuterMount, *logicTip;
+	G4VPhysicalVolume *physAtmosphere[10], *physWorld, *physDet, *physShield, *physShield2, *physShield3, *physXeBox, *physWindow, *physSubtract, *physIntersect,*physProbe, *physArmOut, *physArmIn, *physOuterMount, *physTip;
 	G4Material *Air[10];
-	G4Tubs *solidDet, *solidShield1, *solidShield2, *solidShield3, *solidWindow, *solidArmOut, *solidArmIn, *solidProbe, *solidOuterMount;
+	G4Tubs *solidDet, *solidShield1, *solidShield2, *solidShield3, *solidWindow, *solidArmOut, *solidArmIn, *solidProbe, *solidOuterMount, *solidTip;
 	G4VSolid *solidIntersect;
 
 	G4Material *intersectMat;

@@ -157,6 +157,10 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 	logicProbe = new G4LogicalVolume(solidProbe, probeMat, "logicProbe");
 	physProbe = new G4PVPlacement(RotProbe, G4ThreeVector(0.,1.07*m,0.), logicProbe, "physProbe", logicWorld, false, 0, true);
 
+	solidTip = new G4Tubs("solidTube", 0.*m, 0.0117*m, 0.001*m, 0*deg, 360*deg);
+	logicTip = new G4LogicalVolume(solidTip, probeMat, "logicTip");
+	physTip = new G4PVPlacement(RotProbe, G4ThreeVector(0.,0.010*m,0.), logicTip, "physTip", logicWorld, false, 0, true);
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 //~~~~~~~~~~~~~~~~~~~~~~~~OUTERMOUNT~~~~~~~~~~~~~~~~~~~~~~//
 
@@ -184,7 +188,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
 	solidDet = new G4Tubs("solidDet", 0*mm, detRadius, detLength - detOffset, 0*deg, 360*deg); //inner radius, outer radius, length, starting and stopping angle
 	logicDet = new G4LogicalVolume(solidDet, detMat, "logicDet");
-	physDet = new G4PVPlacement(0, G4ThreeVector(0.,0.,1.17*m - detOffset + detLength/2), logicDet, "physDet", logicWorld, false, 0, true);
+	physDet = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.190*m), logicDet, "physDet", logicWorld, false, 0, true);
 
 	fScoringVolume = logicDet;
 	//G4cout << "DETECTOR DISTANCEEEEEEE" << 3.4*cm - detOffset + detLength/2 << G4endl;
@@ -193,21 +197,21 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
 	solidShield1 = new G4Tubs("solidShield1", detRadius, detRadius + 5.*mm, detLength, 0*deg, 360*deg); //inner radius, outer radius, length, starting and stopping angle
 	logicShield1 = new G4LogicalVolume(solidShield1, shieldMat1, "logicShield1");
-	physShield = new G4PVPlacement(0, G4ThreeVector(0.,0.,1.17*m + detLength/2), logicShield1, "physShield1", logicWorld, false, 0, true);
+	physShield = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.190*m), logicShield1, "physShield1", logicWorld, false, 0, true);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 //~~~~~~~~~~~~~~~~~~~~~Cu Cylinder~~~~~~~~~~~~~~~~~~~~//
 
 	solidShield2 = new G4Tubs("solidShield2", detRadius + 5.*mm, detRadius + 10.*mm, detLength, 0*deg, 360*deg); //inner radius, outer radius, length, starting and stopping angle
 	logicShield2 = new G4LogicalVolume(solidShield2, shieldMat2, "logicShield2");
-	physShield2 = new G4PVPlacement(0, G4ThreeVector(0.,0.,1.17*m + detLength/2), logicShield2, "physShield2", logicWorld, false, 0, true);
+	physShield2 = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.190*m), logicShield2, "physShield2", logicWorld, false, 0, true);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 //~~~~~~~~~~~~~~~~~~~~~Pb Cylinder~~~~~~~~~~~~~~~~~~~~//
 
 	solidShield3 = new G4Tubs("solidShield3", detRadius + 10.*mm, detRadius + 15.*mm, detLength, 0*deg, 360*deg); //inner radius, outer radius, length, starting and stopping angle
 	logicShield3 = new G4LogicalVolume(solidShield3, shieldMat3, "logicShield3");
-	physShield3 = new G4PVPlacement(0, G4ThreeVector(0.,0.,1.17*m + detLength/2), logicShield3, "physShield3", logicWorld, false, 0, true);
+	physShield3 = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.190*m), logicShield3, "physShield3", logicWorld, false, 0, true);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 //~~~~~~~~~~~~~~~~~~~~Xe BOX~~~~~~~~~~~~~~~~~~~~~~~~~~//
@@ -219,9 +223,9 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 //~~~~~~~~~~~~~~~~~~~~Window~~~~~~~~~~~~~~~~~~~~~~~~~~//
 	if(spawnWindow == true)
 	{
-		solidWindow = new G4Tubs("solidWindow", 0.*mm, 60.*mm, 0.5*mm, 0*deg, 360*deg); //inner radius, outer radius, length, starting and stopping angle
+		solidWindow = new G4Tubs("solidWindow", 0.*mm, 60.*mm, 0.25*mm, 0*deg, 360*deg); //inner radius, outer radius, length, starting and stopping angle
 		logicWindow = new G4LogicalVolume(solidWindow, windowMat, "logicWindow");
-		physWindow = new G4PVPlacement(0, G4ThreeVector(0.,0.,1.13*m ), logicWindow, "physWindow", logicWorld, false, 0, true);
+		physWindow = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.145*m), logicWindow, "physWindow", logicWorld, false, 0, true);
 	}
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 //~~~~~~~~~~~~~~~~~~~~BACKWALL~~~~~~~~~~~~~~~~~~~~~~~~//
