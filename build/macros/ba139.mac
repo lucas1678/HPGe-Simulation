@@ -11,6 +11,22 @@
 
 
 #/stepping/StopTime 30 #time to run simulation for, in minutes
-/run/beamOn 1000000
+#/run/beamOn 100000
+
+#/gps/pos/centre 0 2 0 mm
+#/run/beamOn 100000
+
+#/gps/pos/centre 0 4 0 mm
+#/run/beamOn 100000
+
+#/gps/pos/centre 0 6 0 mm
+#/run/beamOn 100000
+
+#/gps/pos/centre 0 8 0 mm
+#/run/beamOn 100000
+
+#/gps/pos/centre 0 10 0 mm
+#/run/beamOn 100000
+
 
 

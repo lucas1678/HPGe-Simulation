@@ -14,6 +14,12 @@
 #include "G4LogicalSkinSurface.hh"
 #include "G4Trap.hh"
 #include "G4GenericMessenger.hh"
+#include "G4Sphere.hh"
+#include "G4VSolid.hh"
+#include "G4SubtractionSolid.hh"
+#include "G4IntersectionSolid.hh"
+#include "G4RotationMatrix.hh"
+#include "G4Transform3D.hh"
 //#include "G4CMP.hh"
 
 #include "detector.hh"
@@ -37,9 +43,12 @@ private:
 	G4bool spawnBackWall, spawnWindow;
 	G4LogicalVolume *fScoringVolume;
 	
-	G4Box *solidAtmosphere, *solidWorld, *solidXeBox;
-	G4LogicalVolume *logicDet, *logicAtmosphere[10], *logicWorld, *logicShield1, *logicShield2, *logicShield3, *logicXeBox, *logicWindow;
-	G4VPhysicalVolume *physAtmosphere[10], *physWorld, *physDet, *physShield, *physShield2, *physShield3, *physXeBox, *physWindow;
+	G4Box *solidAtmosphere, *solidWorld;
+	G4Sphere *solidXeVolume;
+	
+	G4LogicalVolume *logicDet, *logicAtmosphere[10], *logicWorld, *logicShield1, *logicShield2, *logicShield3, *logicXeVolume, *logicWindow, *logicChamber;
+	G4VPhysicalVolume *physAtmosphere[10], *physWorld, *physDet, *physShield, *physShield2, *physShield3, *physXeVolume, *physWindow, *physChamber, *physChamber2;
+	
 	G4Material *Air[10];
 	G4Tubs *solidDet, *solidShield1, *solidShield2, *solidShield3, *solidWindow;
 

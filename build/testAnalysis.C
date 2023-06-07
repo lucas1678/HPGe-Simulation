@@ -77,6 +77,8 @@ unordered_map<string, double> peakFitting(int binNumber, TH1F *bckgHist, double 
 	// …The value in the center of the peak value[i] minus the average value in two symmetrically positioned channels (channels i-3*sigma, i+3*sigma) must be greater than threshold. Otherwise the peak is ignored…
 	for(int i=0; i < binNumber+2; i++) deconvHist->SetBinContent(i, dest[i]);
 	deconvHist->SetLineColor(kRed);
+	double deconvBinWidth = deconvHist->GetBinWidth(80);
+
 
 	Double_t *xpeaks = s->GetPositionX();
 	Double_t a;
@@ -110,21 +112,21 @@ unordered_map<string, double> peakFitting(int binNumber, TH1F *bckgHist, double 
 	Double_t FitStart2 = 163.8;
 	Double_t FitEnd2 = 167.8;
 
-	TF1 *f1 = new TF1("f1", "gausn(0)", FitStart1, FitEnd1);
+	TF1 *f1 = new TF1("f1", "gaus(0)", FitStart1, FitEnd1);
 	f1->SetParameters(40, 33.20, 0.25);
 	f1->SetParLimits(1, 33.0, 33.5);
 	f1->SetParLimits(2, 0.2, 5.0);
 
-	TF1 *f2 = new TF1("f2", "gausn(0)",FitStart2, FitEnd2);
+	TF1 *f2 = new TF1("f2", "gaus(0)",FitStart2, FitEnd2);
 	f2->SetParameters(50, 165.86, 0.15);
 	f2->SetParLimits(1, 165.4, 166.0); //165.86
 	f2->SetParLimits(2, 0.2, 5.0);
 
-
-
 	deconvHist->Fit(f1, "N","0", FitStart1, FitEnd1);
 	deconvHist->Fit(f2, "N","0", FitStart2, FitEnd2);
 
+	double counts166 = (f2->Integral(FitStart2, FitEnd2))/deconvBinWidth;
+	double counts33 = (f1->Integral(FitStart1, FitEnd1))/deconvBinWidth;
 	double gaussDev33 = f1->GetParameter(2);
 	double gaussDev166 = f2->GetParameter(2);
 
@@ -192,6 +194,8 @@ unordered_map<string, double> peakFitting(int binNumber, TH1F *bckgHist, double 
 	statMap["Sigma33"] =  gaussDev33;
 	statMap["Sigma166"] = gaussDev166;
 	statMap["PeaksFound"] = peaksFound;
+	statMap["Counts166"] = counts166;
+	statMap["Counts33"] = counts33;
 	
 	return statMap;
 
@@ -203,7 +207,7 @@ unordered_map<string, double> peakFitting(int binNumber, TH1F *bckgHist, double 
 void testAnalysis()
 {
 //###############################OPENING FILES######################################//
-	int simBinNumber = 1000;
+	int simBinNumber = 800;
 	TH1F *simBackgroundHist = new TH1F("simBackgroundHist", "SimBckg", simBinNumber, 0, 400);
 
 	double value;
@@ -230,17 +234,19 @@ void testAnalysis()
 
 //###############################RUNNING SCRIPT######################################//
 
-	double runTime; //IN MINUTES
+	//double runTime; //IN MINUTES
 	vector<double> Times;
 	vector<double> Sigma33;
 	vector<double> Sigma166;
 	vector<double> PeaksFound;
+	vector<double> Counts166;
+	vector<double> Counts33; 
 	unordered_map<string, double> statMap;
 
-	double upperTime = 60.0;
-	double incrementSize = 5.0;
+	double upperTime = 1440.0; //IN MINUTES
+	double incrementSize = 36.0;
 	
-	for(int i=incrementSize; i<=upperTime; i+=incrementSize)
+	for(double i=incrementSize; i<=upperTime; i+=incrementSize)
 	{
 		statMap = peakFitting(simBinNumber, simBackgroundHist, bckgCounts, simBckgEntries, i, false, false);
 
@@ -248,6 +254,8 @@ void testAnalysis()
 		Sigma33.push_back(statMap["Sigma33"]);
 		Sigma166.push_back(statMap["Sigma166"]);
 		PeaksFound.push_back(statMap["PeaksFound"]);
+		Counts166.push_back(statMap["Counts166"]);
+		Counts33.push_back(statMap["Counts33"]);
 	}
 
 //###############################DRAWING######################################//
@@ -287,4 +295,23 @@ void testAnalysis()
 		}
 	}
 	canvas->Update();
+
+	TCanvas *canvas2 = new TCanvas("canvas2", "Plot2", 800, 600);
+	TGraph *graph33_2 = new TGraph(Times.size(), Times.data(), Counts33.data());
+	TGraph *graph166_2 = new TGraph(Times.size(), Times.data(), Counts166.data());
+
+	graph33_2->SetMarkerStyle(20);
+	graph33_2->SetMarkerColor(kBlue);
+	graph166_2->SetMarkerStyle(20);
+	graph166_2->SetMarkerColor(kRed);
+
+	graph166_2->GetXaxis()->SetTitle("Time (min)");
+	graph166_2->GetYaxis()->SetTitle("Counts");
+	//graph166_2->GetYaxis()->SetRangeUser(0,1.5);
+	graph166_2->SetTitle("Counts vs. Time (Red : 166keV, Blue : 33keV)");
+
+	canvas2->cd();
+	graph166_2->Draw("AP");
+	graph33_2->Draw("P");
+
 }

@@ -5,7 +5,7 @@ MyRunAction::MyRunAction()
 	auto analysisManager = G4AnalysisManager::Instance();
 	analysisManager->SetVerboseLevel(1);
 	
-	analysisManager->CreateNtuple("Energy Deposition", "Energy Deposition");
+	analysisManager->CreateNtuple("Data", "Data");
 	analysisManager->CreateNtupleDColumn("fEdep");
 	analysisManager->CreateNtupleDColumn("runTime"); //new
 	analysisManager->FinishNtuple(0);

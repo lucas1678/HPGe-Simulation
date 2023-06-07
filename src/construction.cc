@@ -137,10 +137,10 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 	physShield3 = new G4PVPlacement(0, G4ThreeVector(0.,0.,7.*cm + detLength/2), logicShield3, "physShield3", logicWorld, false, 0, true);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-//~~~~~~~~~~~~~~~~~~~~Xe BOX~~~~~~~~~~~~~~~~~~~~~~~~~~//
-	solidXeBox = new G4Box("solidXeBox", 10.*mm, 10.*mm, 10.*mm);
-	logicXeBox = new G4LogicalVolume(solidXeBox, xeMat, "logicXeBox");
-	physXeBox = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.), logicXeBox, "physXeBox", logicWorld, false, 0, true);
+//~~~~~~~~~~~~~~~~~~~~Xe Volume~~~~~~~~~~~~~~~~~~~~~~~~~~//
+	solidXeVolume = new G4Sphere("solidXeVolume", 0.0*m, 0.0614*m, 0*deg, 360*deg, 0*deg, 180*deg);
+	logicXeVolume = new G4LogicalVolume(solidXeVolume, xeMat, "logicXeVolume");
+	physXeVolume = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.), logicXeVolume, "physXeVolume", logicWorld, false, 0, true);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 //~~~~~~~~~~~~~~~~~~~~Window~~~~~~~~~~~~~~~~~~~~~~~~~~//
@@ -160,79 +160,25 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 		G4VPhysicalVolume *physTest = new G4PVPlacement(0, G4ThreeVector(0.,0.,-12.*cm), logicTest, "physTest", logicWorld, false, 0, true);
 	}
 
+//~~~~~~~~~~~~~~~~~~~~MAIN CHAMBER~~~~~~~~~~~~~~~~~~~~~~//
+	G4RotationMatrix *rotationMatrix = new G4RotationMatrix();
+
+	G4VSolid *solidSphereChamber = new G4Sphere("solidSphereChamber", 0.0614*m, 0.0812*m, 0*deg, 360*deg, 0*deg, 180*deg);
+	G4VSolid *solidBoxChamber = new G4Box("solidBoxChamber", 0.062*m, 0.062*m, 0.062*m);
+	G4VSolid *solidCylinderChamber = new G4Tubs("solidCylinderChamber", 0.0*m, 0.037*m, 0.124*m, 0*deg, 360*deg);
+	
+	G4VSolid *pre0_solidChamber = new G4IntersectionSolid("pre0_solidChamber", solidSphereChamber, solidBoxChamber, 0, G4ThreeVector(0,0,0)); //chamber with no holes
+	rotationMatrix->rotateX(90.0 * degree);
+	G4VSolid *solidChamber = new G4SubtractionSolid("solidChamber", pre0_solidChamber, solidCylinderChamber, rotationMatrix, G4ThreeVector(0,0,0)); //subtractin cylinder from chamber
+	rotationMatrix->rotateY(90.0 * degree);
+	G4VSolid *solidChamberFinal = new G4SubtractionSolid("solidChamberFinal", solidChamber, solidCylinderChamber, rotationMatrix, G4ThreeVector(0,0,0));
+	G4VSolid *solidChamberFinalForReal = new G4SubtractionSolid("solidChamberFinalForReal", solidChamberFinal, solidCylinderChamber, 0, G4ThreeVector(0,0,0));
+
+	logicChamber = new G4LogicalVolume(solidChamberFinalForReal, shieldMat2, "logicChamber");
+	physChamber = new G4PVPlacement(0, G4ThreeVector(0,0,0), logicChamber, "physChamber", logicWorld,false,0,true);
 
 
 
-	/*G4OpticalSurface* OpWaterSurface = new G4OpticalSurface("WaterSurface");
-	OpWaterSurface->SetModel(glisur);
-	OpWaterSurface->SetType(dielectric_metal);
-	OpWaterSurface->SetFinish(polished);
-	G4LogicalSkinSurface* WaterSurface = new G4LogicalSkinSurface("WaterSurface",logicDet, OpWaterSurface);*/
-
-	/*G4double pp[2] = {2.038*eV, 4.144*eV};
-	G4double specularlobe[2] = {0.3, 0.3};
-	G4double specularspike[2] = {0.2, 0.2};
-	G4double backscatter[2] = {0.1, 0.1};
-	G4double rindex[2] = {1.35, 1.40};
-	G4double reflectivity[2] = {1.0, 1.0};
-	G4double efficiency[2] = {1.0, 1.0};
-	G4MaterialPropertiesTable *SurfaceMPT = new G4MaterialPropertiesTable();
-	SurfaceMPT->AddProperty("RINDEX", pp, rindex, 2);
-	SurfaceMPT->AddProperty("SPECULARLOBECONSTANT",pp,specularlobe,2);
-	SurfaceMPT->AddProperty("SPECULARSPIKECONSTANT",pp,specularspike,2);
-	SurfaceMPT->AddProperty("BACKSCATTERCONSTANT",pp,backscatter,2);
-	SurfaceMPT->AddProperty("REFLECTIVITY",pp,reflectivity,2);
-	SurfaceMPT->AddProperty("EFFICIENCY",pp,efficiency,2);
-	OpWaterSurface->SetMaterialPropertiesTable(SurfaceMPT);*/
-
-	/*G4double density0 = 1.29*kg/m3;
-	G4Element *N = new G4Element("Nitrogen", "N", 7, 14.01*g/mole);	
-	G4Element *O = new G4Element("Oxygen", "O", 8, 16.00*g/mole);	
-	G4double f = 3.;
-	G4double R = 8.1344626181532;
-	G4double g0 = 9.81;
-	G4double kappa = (f+2.)/f;
-	G4double T = 293.15;
-	G4double M = (0.3*16.00*g/mole + 0.7*14.01*g/mole)/1000.;
-	for(G4int i=0; i<10; i++)
-	{
-		std::stringstream stri;
-		stri << i;
-		G4double h = 40e3/10.*i;
-		G4double density = density0*pow((1-(kappa)/kappa*M*g0*h/(R*T)), (1/(kappa-1)));
-		Air[i] = new G4Material("G4_AIR_"+stri.str(), density, 2);
-		Air[i]->AddElement(N, 70*perCent);
-		Air[i]->AddElement(O, 30*perCent);
-	}
-	solidAtmosphere = new G4Box("solidAtmosphere", 40*km, 40*km, 2*km);
-	for(G4int i = 0; i<10; i++)
-	{
-		logicAtmosphere[i] = new G4LogicalVolume(solidAtmosphere, Air[i], "logicAtmosphere");
-		physAtmosphere[i] = new G4PVPlacement(0, G4ThreeVector(0.,0.,(20.*km)/10.*2.*i - 20.*km + 2.*km), logicAtmosphere[i], "physAtmosphere", logicWorld, false, i, true);
-	}*/
-
-	/*G4VSolid* testcoatingsolid = new G4Trap("testcoatingsolid",5*cm,60*deg,60*deg,20*cm,20*cm,20*cm,0*deg,20*cm,20*cm,20*cm,0*deg);      
-        G4LogicalVolume* testcoatinglog = new G4LogicalVolume(testcoatingsolid,detMat,"testcoatinglog");
-        G4VPhysicalVolume* testcoatingphys = new G4PVPlacement(0,G4ThreeVector(0.,0.,10.*cm),testcoatinglog,"testcoatingphys",logicWorld,false,1,false);*/
-
-
-
-        //making and placing the scintillator tile
-
-        //G4VSolid* testsolid        = new G4Trap("testsolid",scintthickness/2,taperanglex,taperangley,squarelong/2,squarelong/2,squarelong/2,zeroangle,scintsquarelength/2,scintsquarelength/2,scintsquarelength/2,zeroangle);
-
-	//G4VSolid* testsolid        = new G4Trap("testsolid",scintthickness/2,taperanglex,taperangley,squarelong/2,squarelong/2,squarelong/2,zeroangle,scintsquarelength/2,scintsquarelength/2,scintsquarelength/2,zeroangle);
-        //G4LogicalVolume* testlog   = new G4LogicalVolume(testsolid,detMat,"testlog");
-        //G4VPhysicalVolume* testphys = new G4PVPlacement(rotateNull,moveNull,testlog,"testphys",testcoatinglog,false,1,false);
-
-
-        //Adding the SiPMs to the tiles
-
-	/*G4OpticalSurface* OpWaterSurface = new G4OpticalSurface("WaterSurface");
-	OpWaterSurface->SetModel(glisur);
-	OpWaterSurface->SetType(dielectric_metal);
-	OpWaterSurface->SetFinish(polished);
-        G4LogicalSkinSurface* skinn = new G4LogicalSkinSurface("skinn",testcoatinglog,OpWaterSurface);*/
 
 
 	return physWorld;

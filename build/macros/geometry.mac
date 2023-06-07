@@ -4,7 +4,7 @@
 /construction/detRadius 10.0 mm
 /construction/worldMatChoice "G4_AIR"
 /construction/spawnBackWall false
-/construction/spawnWindow true
+/construction/spawnWindow false
 /construction/windowMatChoice "G4_Be"
 
 /run/beamOn 1     #this command and the one below are here so that geant updates the new geometry and 	

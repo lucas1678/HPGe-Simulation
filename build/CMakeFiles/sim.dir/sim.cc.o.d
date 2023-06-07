@@ -604,6 +604,16 @@ CMakeFiles/sim.dir/sim.cc.o: \
  /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4GenericMessenger.hh \
  /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4AnyType.hh \
  /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4AnyMethod.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Sphere.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Sphere.icc \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4VSolid.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4SubtractionSolid.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4BooleanSolid.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4DisplacedSolid.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4BooleanSolid.icc \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4IntersectionSolid.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4RotationMatrix.hh \
+ /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4Transform3D.hh \
  /home/lbackes/geant4/geant4-v11.0.1/projects/barium_project/include/detector.hh \
  /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4VSensitiveDetector.hh \
  /home/lbackes/geant4/geant4-v11.0.1-install/include/Geant4/G4VReadOutGeometry.hh \
