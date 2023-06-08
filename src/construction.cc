@@ -101,7 +101,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 //~~~~~~~~~~~~~~~~~~~~~~~WORLD~~~~~~~~~~~~~~~~~~~~~~~~~//
 
-	solidWorld = new G4Box("solidWorld", 0.5*m, 0.5*m, 0.5*m);
+	solidWorld = new G4Box("solidWorld", 1.*m, 1.*m, 1.*m);
 	logicWorld = new G4LogicalVolume(solidWorld, worldMat, "logicWorld");
 	physWorld = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.), logicWorld, "physWorld", 0, false, 0, true);
 
@@ -160,7 +160,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 		G4VPhysicalVolume *physTest = new G4PVPlacement(0, G4ThreeVector(0.,0.,-12.*cm), logicTest, "physTest", logicWorld, false, 0, true);
 	}
 
-//~~~~~~~~~~~~~~~~~~~~MAIN CHAMBER~~~~~~~~~~~~~~~~~~~~~~//
+//~~~~~~~~~~~~~~~~~~~~MAIN CHAMBER~~~~~~~~~~~~~~~~~~~~~~// //CHANGE MATERIAL!!
 	G4RotationMatrix *rotationMatrix = new G4RotationMatrix();
 
 	G4VSolid *solidSphereChamber = new G4Sphere("solidSphereChamber", 0.0614*m, 0.0812*m, 0*deg, 360*deg, 0*deg, 180*deg);
@@ -176,9 +176,43 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
 	logicChamber = new G4LogicalVolume(solidChamberFinalForReal, shieldMat2, "logicChamber");
 	physChamber = new G4PVPlacement(0, G4ThreeVector(0,0,0), logicChamber, "physChamber", logicWorld,false,0,true);
+//~~~~~~~~~~~~~~~~~~~~~~PROBE~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+	rotationMatrix->rotateX(0.*deg);
+	rotationMatrix->rotateY(90.*deg);
+	rotationMatrix->rotateZ(0.*deg);
 
 
+	solidProbe = new G4Tubs("solidArmOut", (0.0117/2.0)*m, (0.0127/2.0)*m, (1.0597/2.0)*m, 0*deg, 360*deg);
+	logicProbe = new G4LogicalVolume(solidProbe, shieldMat2, "logicProbe");
+	physProbe = new G4PVPlacement(rotationMatrix, G4ThreeVector(0.,((1.0597/2.0)+0.053)*m,0.), logicProbe, "physProbe", logicWorld, false, 0, true);
 
+	solidTip = new G4Cons("solidTube", (0.0117/2.0)*m, (0.0127/2.0)*m, 0*m, (0.01/2.0)*m, 0.006*m, 0*deg, 360*deg);
+	logicTip = new G4LogicalVolume(solidTip, shieldMat2, "logicTip");
+	physTip = new G4PVPlacement(rotationMatrix, G4ThreeVector(0.,0.047*m,0.), logicTip, "physTip", logicWorld, false, 0, true);
+
+	solidTip2_1 = new G4Box("solidTip2_1", 0.003*m, 0.001*m, 0.018*m);
+	solidTip2_2 = new G4Tubs("solidTip2_2", 0.*m, 0.003*m, 0.018*m, 0*deg, 180*deg);
+	solidTip2 = new G4UnionSolid("solidTip2", solidTip2_1, solidTip2_2, 0, G4ThreeVector(0,0.0005*m,0));
+	logicTip2 = new G4LogicalVolume(solidTip2, shieldMat2, "logicTip2");
+	physTip2 = new G4PVPlacement(rotationMatrix, G4ThreeVector(0,0.023*m,-0.001*m), logicTip2, "physTip2", logicWorld, false, 0, true);
+
+	solidTip3 = new G4Box("solidTip3", 0.003*m, 0.0005*m, 0.019*m);
+	logicTip3 = new G4LogicalVolume(solidTip3, shieldMat2, "logicTip3");
+	physTip3 = new G4PVPlacement(rotationMatrix, G4ThreeVector(0,0.010*m,0.0025*m), logicTip3, "physTip3", logicWorld, false, 0, true);
+
+	solidTipConnector1 = new G4Tubs("solidTipConnector1", 0.001*m, 0.0015*m, 0.001*m, 0*deg, 360*deg);
+	solidTipConnector2 = new G4Tubs("solidTipConnector2", 0.001*m, 0.0015*m, 0.001*m, 0*deg, 360*deg);
+	solidTipConnector = new G4UnionSolid("solidTipConnector", solidTipConnector1, solidTipConnector2, 0, G4ThreeVector(0,0.014*m,0));
+
+	logicTipConnector = new G4LogicalVolume(solidTipConnector, shieldMat2, "logicTipConnector");
+	physTipConnector = new G4PVPlacement(0, G4ThreeVector(0,0.012*m,0.001*m), logicTipConnector, "physTipConnector", logicWorld, false, 0, true);
+
+	solidTipConnector3 = new G4Tubs("solidTipConnector3", 0.0009*m, 0.0010*m, 0.0015*m, 0*deg, 360*deg);
+	solidTipConnector4 = new G4Tubs("solidTipConnector4", 0.0009*m, 0.0010*m, 0.0015*m, 0*deg, 360*deg);
+	solidTipConnector_2 = new G4UnionSolid("solidTipConnector_2", solidTipConnector3, solidTipConnector4, 0, G4ThreeVector(0,0.014*m,0));
+
+	logicTipConnector_2 = new G4LogicalVolume(solidTipConnector_2, shieldMat2, "logicTipConnector_2");
+	physTipConnector_2 = new G4PVPlacement(0, G4ThreeVector(0,0.012*m,0.0045*m), logicTipConnector_2, "physTipConnector_2", logicWorld, false, 0, true);
 
 
 	return physWorld;

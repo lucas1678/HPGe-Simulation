@@ -15,6 +15,12 @@
 /vis/geometry/set/forceSolid logicTest     #wall
 /vis/geometry/set/forceSolid logicWindow  #Window
 /vis/geometry/set/forceSolid logicChamber #Chamber
+/vis/geometry/set/forceSolid logicProbe #Probe
+/vis/geometry/set/forceSolid logicTip #Probe Tip 1
+/vis/geometry/set/forceSolid logicTip2 #Probe Tip 2
+/vis/geometry/set/forceSolid logicTip3 #Probe Tip 3
+/vis/geometry/set/forceSolid logicTipConnector #Probe Tip Connector
+/vis/geometry/set/forceSolid logicTipConnector_2 #Probe Tip Connector2
 
 /vis/geometry/set/colour logicDet 1 0.8 0 0.8 1     #middle three numbers are rgb values (from 0 to 1)
 /vis/geometry/set/colour logicShield1 1 0.6 0.6 0.6 1
@@ -22,6 +28,12 @@
 /vis/geometry/set/colour logicShield3 1 0.2 0.2 0.2 1
 /vis/geometry/set/colour logicShield3 1 0.2 0.2 0.2 1
 /vis/geometry/set/colour logicWindow 1 1 0.34 0.2 1
+/vis/geometry/set/colour logicTip 1 0.5 0.5 0.5 1
+/vis/geometry/set/colour logicProbe 1 0.5 0.5 0.5 1
+/vis/geometry/set/colour logicTip2 1 0.5 0.5 0.5 1
+/vis/geometry/set/colour logicTip3 1 0.5 0.5 0.5 1
+/vis/geometry/set/colour logicTipConnector 1 0.5 0.5 0 1
+/vis/geometry/set/colour logicTipConnector_2 1 0.5 0.5 0 1
 
 #/gun/particle proton
 #/vis/ogl/set/displayListLimit 500000

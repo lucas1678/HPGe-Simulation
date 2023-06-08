@@ -18,8 +18,10 @@
 #include "G4VSolid.hh"
 #include "G4SubtractionSolid.hh"
 #include "G4IntersectionSolid.hh"
+#include "G4UnionSolid.hh"
 #include "G4RotationMatrix.hh"
 #include "G4Transform3D.hh"
+#include "G4Cons.hh"
 //#include "G4CMP.hh"
 
 #include "detector.hh"
@@ -43,14 +45,16 @@ private:
 	G4bool spawnBackWall, spawnWindow;
 	G4LogicalVolume *fScoringVolume;
 	
-	G4Box *solidAtmosphere, *solidWorld;
+	G4Box *solidAtmosphere, *solidWorld, *solidTip3;
 	G4Sphere *solidXeVolume;
+	G4VSolid *solidTip2_1, *solidTip2_2, *solidTip2, *solidTipConnector1, *solidTipConnector2, *solidTipConnector, *solidTipConnector_2, *solidTipConnector3, *solidTipConnector4;
 	
-	G4LogicalVolume *logicDet, *logicAtmosphere[10], *logicWorld, *logicShield1, *logicShield2, *logicShield3, *logicXeVolume, *logicWindow, *logicChamber;
-	G4VPhysicalVolume *physAtmosphere[10], *physWorld, *physDet, *physShield, *physShield2, *physShield3, *physXeVolume, *physWindow, *physChamber, *physChamber2;
+	G4LogicalVolume *logicDet, *logicAtmosphere[10], *logicWorld, *logicShield1, *logicShield2, *logicShield3, *logicXeVolume, *logicWindow, *logicChamber, *logicProbe, *logicTip, *logicTip2, *logicTip3, *logicTipConnector, *logicTipConnector_2;
+	G4VPhysicalVolume *physAtmosphere[10], *physWorld, *physDet, *physShield, *physShield2, *physShield3, *physXeVolume, *physWindow, *physChamber, *physChamber2, *physProbe, *physTip, *physTip2, *physTip3, *physTipConnector, *physTipConnector_2;
 	
 	G4Material *Air[10];
-	G4Tubs *solidDet, *solidShield1, *solidShield2, *solidShield3, *solidWindow;
+	G4Tubs *solidDet, *solidShield1, *solidShield2, *solidShield3, *solidWindow, *solidProbe;
+	G4Cons *solidTip;
 
 	virtual void ConstructSDandField();
 
