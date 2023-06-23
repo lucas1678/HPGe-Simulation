@@ -4,11 +4,11 @@
 /gps/ion 55 137 0 0  #Z, A, 0, 0
 /gps/direction -1 0 0 #momentum direction
 /gps/energy 0
+/gps/number 1
 
 /gps/pos/type Volume
-/gps/pos/shape Sphere
-/gps/pos/centre 0 0 0 #centre of volume source
-/gps/pos/radius 1 cm  #radius of source sphere
+/gps/pos/shape Sphere  #spawn isotopes in spherical volume 
+/gps/pos/centre 0 -0.25 0.45 cm #centre of volume source, middle value is height!
+/gps/pos/radius 0.635 cm  #radius of source sphere
 
-/run/beamOn 500000
-
+/run/beamOn 10000000

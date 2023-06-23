@@ -47,13 +47,13 @@ private:
 	
 	G4Box *solidAtmosphere, *solidWorld, *solidTip3;
 	G4Sphere *solidXeVolume;
-	G4VSolid *solidTip2_1, *solidTip2_2, *solidTip2, *solidTipConnector1, *solidTipConnector2, *solidTipConnector, *solidTipConnector_2, *solidTipConnector3, *solidTipConnector4;
+	G4VSolid *solidTip2_1, *solidTip2_2, *solidTip2, *solidTipConnector1, *solidTipConnector2, *solidTipConnector, *solidTipConnector_2, *solidTipConnector3, *solidTipConnector4, *solidChamberSide3_1, *solidChamberSide3_2, *solidChamberSide3;
 	
-	G4LogicalVolume *logicDet, *logicAtmosphere[10], *logicWorld, *logicShield1, *logicShield2, *logicShield3, *logicXeVolume, *logicWindow, *logicChamber, *logicProbe, *logicTip, *logicTip2, *logicTip3, *logicTipConnector, *logicTipConnector_2;
-	G4VPhysicalVolume *physAtmosphere[10], *physWorld, *physDet, *physShield, *physShield2, *physShield3, *physXeVolume, *physWindow, *physChamber, *physChamber2, *physProbe, *physTip, *physTip2, *physTip3, *physTipConnector, *physTipConnector_2;
+	G4LogicalVolume *logicDet, *logicAtmosphere[10], *logicWorld, *logicShield1, *logicShield2, *logicShield3, *logicXeVolume, *logicWindow, *logicChamber, *logicProbe, *logicTip, *logicTip2, *logicTip3, *logicTipConnector, *logicTipConnector_2, *logicHousing, *logicChamberSide, *logicChamberSide2, *logicChamberSide3, *logicChamberSide4, *logicGear;
+	G4VPhysicalVolume *physAtmosphere[10], *physWorld, *physDet, *physShield, *physShield2, *physShield3, *physXeVolume, *physWindow, *physChamber, *physChamber2, *physProbe, *physTip, *physTip2, *physTip3, *physTipConnector, *physTipConnector_2, *physHousing, *physChamberSide, *physChamberSide2, *physChamberSide3, *physChamberSide4, *physGear;
 	
 	G4Material *Air[10];
-	G4Tubs *solidDet, *solidShield1, *solidShield2, *solidShield3, *solidWindow, *solidProbe;
+	G4Tubs *solidDet, *solidShield1, *solidShield2, *solidShield3, *solidWindow, *solidProbe, *solidHousing, *solidChamberSide, *solidChamberSide2, *solidChamberSide4, *solidGearBase;
 	G4Cons *solidTip;
 
 	virtual void ConstructSDandField();

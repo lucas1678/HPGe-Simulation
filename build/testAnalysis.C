@@ -1,4 +1,12 @@
 using namespace ROOT;
+double myBckgGaussianFunction(double *x, double *par, TH1* estBckgHist)
+{
+	double xValue = x[0];
+	double bckgVal = estBckgHist->GetBinContent(estBckgHist->FindBin(xValue));
+
+	return (par[0]*TMath::Gaus(xValue, par[1], par[2]) + bckgVal);
+}
+
 void backgroundScaling(TH1F *bckgHist, int &bckgEntries, int gammaEntries, double bckgPercent, int simBinNumber, double bckgCounts[])
 {
 	//need & in front of bckgEntries so that function actually changes the bckgEntries variable instead of making a copy of it that exists only inside this function!
@@ -34,11 +42,12 @@ void backgroundScaling(TH1F *bckgHist, int &bckgEntries, int gammaEntries, doubl
 unordered_map<string, double> peakFitting(int binNumber, TH1F *bckgHist, double bckgCounts[], int simBckgEntries, double timeFinal, bool drawBool, bool saveBool) //timeFinal in MINUTES
 {
 	auto simTimeCut = [timeFinal](double time){return (time < timeFinal);};
-	RDataFrame df = ROOT::RDF::MakeCsvDataFrame("gammaData.csv"); 
+	RDataFrame df = ROOT::RDF::MakeCsvDataFrame("gammaData10_8.csv"); 
 	auto simGammaHist = df.Filter(simTimeCut, {"runTime"}).Histo1D({"gamma", "SimGammaHist;Energy[keV];Counts", binNumber, 0, 400}, "fEdep");
 	
 	TH1F *simTotalHist = new TH1F("simTotalHist", "Simulated Spectrum", binNumber, 0, 400);
 	TH1F *deconvHist = new TH1F("deconvHist", "deconvHist", binNumber, 0, 400);
+	TH1F *noBckgHist = new TH1F("noBckgHist", "noBckgHist", binNumber, 0, 400);
 
 	int simGammaEntries = 0;
 	for (int i=0; i<binNumber+2; i++)
@@ -67,12 +76,40 @@ unordered_map<string, double> peakFitting(int binNumber, TH1F *bckgHist, double 
 		//simGammaHist->SetBinContent(i, 0.5*(simGammaHist->GetBinContent(i)));
 		simTotalEntries+=simTotalHist->GetBinContent(i);
 		finalBinCounts[i] = simTotalHist->GetBinContent(i);
-	}
+	}	
+	
 	cout << "Simulation total entries (gamma + bckg) are: " << simTotalEntries << endl;
+//~~~~~~~~~~~~~~~~~~~~~~~Averaging First 8keV for Better Bckg Fit~~~~~~~~~
+	double simTotalBinWidth = simTotalHist->GetBinWidth(80);	
+	double avgStartBin = 4.0/simTotalBinWidth; //starts avg at 4keV bin
+	double avgEndBin = 8.0/simTotalBinWidth; //ends avg at 8keV bin
+	double avgValue = (simTotalHist->Integral(avgStartBin, avgEndBin))/(avgEndBin - avgStartBin + 1);
+	
+	for(int i=1; i<avgStartBin; i++)
+	{
+		simTotalHist->SetBinContent(i, avgValue);
+	}
+
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~PEAK FITTING~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 	TSpectrum *s = new TSpectrum();
-	int peaksFound = 0;
-	peaksFound = s->SearchHighRes(finalBinCounts, dest, binNumber, 6, 10, kTRUE, 100, kTRUE, 3);
+	TSpectrum *s2 = new TSpectrum(); ///////
+	TSpectrum *s3 = new TSpectrum(); ///
+	TSpectrum *s4 = new TSpectrum();
+	TH1 *estBckgHist = s3->Background(simTotalHist, 10, "");
+	//cout << "BINNING BANG: " << estBckgHist->GetBinValue(80) << " AND " << simTotal
+	for (int i=0; i<binNumber+2; i++)
+	{
+		double noBckgValue = ((simTotalHist->GetBinContent(i)) - estBckgHist->GetBinContent(i));
+		if(noBckgValue<0) noBckgValue = 0; 
+		noBckgHist->SetBinContent(i, noBckgValue);
+	}
+	int peaksFound = 0;	
+	int peaksFound2 = 0; ///////
+	int peaksFound3 = 0;
+	peaksFound2 = s2->Search(simTotalHist, 2, "", 0.20); /////////////
+	peaksFound = s4->Search(noBckgHist, 1, "", 0.20);
+	peaksFound3 = s->SearchHighRes(finalBinCounts, dest, binNumber, 6, 25, kTRUE, 200, kTRUE, 5);
 	// above goes like (...,sigma,threshold,bckgRemove,iterations,markovON/OFF, averWindow)
 	// …The value in the center of the peak value[i] minus the average value in two symmetrically positioned channels (channels i-3*sigma, i+3*sigma) must be greater than threshold. Otherwise the peak is ignored…
 	for(int i=0; i < binNumber+2; i++) deconvHist->SetBinContent(i, dest[i]);
@@ -81,6 +118,7 @@ unordered_map<string, double> peakFitting(int binNumber, TH1F *bckgHist, double 
 
 
 	Double_t *xpeaks = s->GetPositionX();
+	Double_t *xpeaks2 = s2->GetPositionX(); /////
 	Double_t a;
 	Int_t bin;
 	Double_t fPositionX[100];
@@ -103,27 +141,38 @@ unordered_map<string, double> peakFitting(int binNumber, TH1F *bckgHist, double 
 	pm = new TPolyMarker(peaksFound, fPositionX, fPositionY);
 	deconvHist->GetListOfFunctions()->Add(pm);
 	pm->SetMarkerStyle(23);
-	pm->SetMarkerColor(kRed);
+	pm->SetMarkerColor(kGreen);
 	pm->SetMarkerSize(1.3);
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~GAUSSIAN FITS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-	Double_t FitStart1 = 31;
-	Double_t FitEnd1 = 35.2;	
-	Double_t FitStart2 = 163.8;
-	Double_t FitEnd2 = 167.8;
+	Double_t FitStart1 = 32.;
+	Double_t FitEnd1 = 35.;	
+	Double_t FitStart2 = 164;
+	Double_t FitEnd2 = 168;
+	double Amp33 = noBckgHist->GetBinContent(noBckgHist->GetXaxis()->FindBin(33.2));
+	double Amp166 = noBckgHist->GetBinContent(noBckgHist->GetXaxis()->FindBin(165.86));
 
-	TF1 *f1 = new TF1("f1", "gaus(0)", FitStart1, FitEnd1);
-	f1->SetParameters(40, 33.20, 0.25);
+	double bckgValue33 = estBckgHist->GetBinContent(estBckgHist->FindBin(33.2));
+	TF1 *f1 = new TF1("f1", "gaus(0)+[3]", FitStart1, FitEnd1);
+	f1->SetParLimits(0, Amp33*0.92, Amp33*1.08);
 	f1->SetParLimits(1, 33.0, 33.5);
 	f1->SetParLimits(2, 0.2, 5.0);
+	f1->SetParLimits(3, bckgValue33-0.01, bckgValue33+0.01);
+	f1->SetParameters(Amp33, 33.20, 0.25, bckgValue33);
 
-	TF1 *f2 = new TF1("f2", "gaus(0)",FitStart2, FitEnd2);
-	f2->SetParameters(50, 165.86, 0.15);
+	double bckgValue166 = estBckgHist->GetBinContent(estBckgHist->FindBin(165.86));
+	TF1 *f2 = new TF1("f2", "gaus(0)+[3]",FitStart2, FitEnd2);
+	f2->SetParLimits(0, Amp166*0.92, Amp166*1.08);
 	f2->SetParLimits(1, 165.4, 166.0); //165.86
-	f2->SetParLimits(2, 0.2, 5.0);
+	f2->SetParLimits(2, 0.35, 5.0);
+	f2->SetParLimits(3, bckgValue166-0.01, bckgValue166+0.01);
+	f2->SetParameters(Amp166, 165.86, 0.15, bckgValue166);
 
-	deconvHist->Fit(f1, "N","0", FitStart1, FitEnd1);
-	deconvHist->Fit(f2, "N","0", FitStart2, FitEnd2);
+	//deconvHist->Fit(f1, "N","0", FitStart1, FitEnd1);
+	//deconvHist->Fit(f2, "N","0", FitStart2, FitEnd2);
+	//noBckgHist->Fit(f1, "N","0", FitStart1, FitEnd1);
+	//noBckgHist->Fit(f2, "N","0", FitStart2, FitEnd2);
+	simTotalHist->Fit(f1, "N","0", FitStart1, FitEnd1);
+	simTotalHist->Fit(f2, "N","0", FitStart2, FitEnd2);
 
 	double counts166 = (f2->Integral(FitStart2, FitEnd2))/deconvBinWidth;
 	double counts33 = (f1->Integral(FitStart1, FitEnd1))/deconvBinWidth;
@@ -139,6 +188,9 @@ unordered_map<string, double> peakFitting(int binNumber, TH1F *bckgHist, double 
 	gaussMean = f2->GetParameter(1);
 	gaussDev = f2->GetParameter(2);
 	cout << "Height: " << gaussHeight << "\nMean: " << gaussMean << "\nDev: " << gaussDev << endl;*/
+
+	//TF1 *f3 = new TF1("f3", "[&](double *x, double *p){return p[0]*(*x)*(*x) + p[1]*(*x) + p[2] + estBckgHist->GetBinContent(10);}", FitStart1, FitEnd1, 3);
+	//simTotalHist->Fit(f3, "N","0", FitStart1, FitEnd1);
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
 	TCanvas *dualCanvas = new TCanvas("DualCanvas", "DualCanvas", 1280, 700); //last 2 num are width and height
@@ -147,9 +199,10 @@ unordered_map<string, double> peakFitting(int binNumber, TH1F *bckgHist, double 
 		simTotalHist->SetTitle(("Simulation Histogram Time: " + std::to_string(timeFinal)).c_str());
 		simTotalHist->GetXaxis()->SetTitle("Energy (keV)");
 		simTotalHist->GetYaxis()->SetTitle("Counts");
-		deconvHist->SetTitle(("Deconvoluted Histogram Time: " + std::to_string(timeFinal)).c_str());
-		deconvHist->GetXaxis()->SetTitle("Energy (keV)");
-		deconvHist->GetYaxis()->SetTitle("Counts");
+		noBckgHist->SetTitle(("Background Removed Histogram Time: " + std::to_string(timeFinal)).c_str());
+		noBckgHist->GetXaxis()->SetTitle("Energy (keV)");
+		noBckgHist->GetYaxis()->SetTitle("Counts");
+		noBckgHist->GetYaxis()->SetRangeUser(0, 1.1*(noBckgHist->GetMaximum()));
 
 		/*TCanvas *c1 = new TCanvas();
 		simTotalHist->Draw();
@@ -170,14 +223,15 @@ unordered_map<string, double> peakFitting(int binNumber, TH1F *bckgHist, double 
 		leftPad->SetLogy();*/
 		dualCanvas->cd(1);
 		simTotalHist->Draw();
-		dualCanvas->cd(2);
-		deconvHist->Draw();
+		estBckgHist->Draw("SAME");
 		f1->SetLineStyle(1);
 		f1->SetLineColor(1);
 		f1->Draw("SAME");
 		f2->SetLineStyle(1);
 		f2->SetLineColor(1);
 		f2->Draw("SAME");
+		dualCanvas->cd(2);
+		noBckgHist->Draw();
 
 	}
 	if(saveBool ==  true)
@@ -186,7 +240,7 @@ unordered_map<string, double> peakFitting(int binNumber, TH1F *bckgHist, double 
 		percentString.erase ( percentString.find_last_not_of('0') + 1, std::string::npos );
 		percentString.erase ( percentString.find_last_not_of('.') + 1, std::string::npos );
 		string timeString = to_string(timeFinal);
-		string fileName = percentString + "histo" + timeString + ".png";
+		string fileName = "histo" + timeString + ".png";
 		dualCanvas->Print(fileName.c_str());
 	}
 
@@ -243,12 +297,12 @@ void testAnalysis()
 	vector<double> Counts33; 
 	unordered_map<string, double> statMap;
 
-	double upperTime = 1440.0; //IN MINUTES
-	double incrementSize = 36.0;
+	double upperTime = 180.0; //IN MINUTES
+	double incrementSize = 5.0;
 	
 	for(double i=incrementSize; i<=upperTime; i+=incrementSize)
 	{
-		statMap = peakFitting(simBinNumber, simBackgroundHist, bckgCounts, simBckgEntries, i, false, false);
+		statMap = peakFitting(simBinNumber, simBackgroundHist, bckgCounts, simBckgEntries, i, true, false);
 
 		Times.push_back(i);
 		Sigma33.push_back(statMap["Sigma33"]);
@@ -300,7 +354,7 @@ void testAnalysis()
 	TGraph *graph33_2 = new TGraph(Times.size(), Times.data(), Counts33.data());
 	TGraph *graph166_2 = new TGraph(Times.size(), Times.data(), Counts166.data());
 
-	graph33_2->SetMarkerStyle(20);
+	graph33_2->SetMarkerStyle(22);
 	graph33_2->SetMarkerColor(kBlue);
 	graph166_2->SetMarkerStyle(20);
 	graph166_2->SetMarkerColor(kRed);
@@ -313,5 +367,22 @@ void testAnalysis()
 	canvas2->cd();
 	graph166_2->Draw("AP");
 	graph33_2->Draw("P");
+
+	for(int i=0; i < upperTime/incrementSize; i++) //green outlines, can prob combine with other loop
+	{
+		if (PeaksFound[i] == 2)
+		{
+			TMarker *tm33_2 = new TMarker(graph33_2->GetX()[i], graph33_2->GetY()[i], 24);
+			tm33_2->SetMarkerSize(1.5);
+			tm33_2->SetMarkerColor(kGreen);
+			tm33_2->Draw();
+
+			TMarker *tm166_2 = new TMarker(graph166_2->GetX()[i], graph166_2->GetY()[i], 24);
+			tm166_2->SetMarkerSize(1.5);
+			tm166_2->SetMarkerColor(kGreen);
+			tm166_2->Draw();
+		}
+	}
+	canvas2->Update();
 
 }

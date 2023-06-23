@@ -1,7 +1,7 @@
 /run/reinitializeGeometry
 
-/construction/detLength 40.0 mm
-/construction/detRadius 10.0 mm
+/construction/detLength 10.0 mm
+/construction/detRadius 5.65 mm
 /construction/worldMatChoice "G4_AIR"
 /construction/spawnBackWall false
 /construction/spawnWindow false
