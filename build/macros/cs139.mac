@@ -1,24 +1,32 @@
-#######################CS-137 SPAWNER#########################
 
-#/process/had/rdm/nucleusLimits 139 139 55 55
 
+#CESIUM 139
+
+/gps/source/add 1.
 /gps/particle ion
-/gps/ion 55 139 0 0  #Z, A, 0, 0
+/gps/ion 55 139 1 0  #Z, A, Q, E   #<---- Modify Z and A numbers to change radioisotope! Q=charge
 /gps/direction -1 0 0 #momentum direction
-/gps/energy 0
+/gps/energy 0          #energy is 0 so isotope is spawning with 0 momentum
 
 /gps/pos/type Volume
-/gps/pos/shape Sphere
-/gps/pos/centre 0 0 0 #centre of volume source
-/gps/pos/radius 1 cm  #radius of source sphere
+/gps/pos/shape Sphere  #spawn isotopes in spherical volume 
+/gps/pos/centre 0 -0.25 0.45 cm #centre of volume source, middle value is height!
+/gps/pos/radius 0.635 cm  #radius of source sphere
 
-/run/beamOn 10000
-/run/beamOn 20000
-/run/beamOn 40000
-/run/beamOn 80000
-/run/beamOn 160000
-/run/beamOn 320000
-/run/beamOn 640000
-/run/beamOn 1280000
+#BARIUM 139
+
+/gps/source/add 1.
+/gps/particle ion
+/gps/ion 56 139 1 0  #Z, A, 0, 0   #<---- Modify Z and A numbers to change radioisotope!
+/gps/direction -1 0 0 #momentum direction
+/gps/energy 0          #energy is 0 so isotope is spawning with 0 momentum
+
+/gps/pos/type Volume
+/gps/pos/shape Sphere  #spawn isotopes in spherical volume 
+/gps/pos/centre 0 -0.25 0.45 cm #centre of volume source, middle value is height!
+/gps/pos/radius 0.635 cm  #radius of source sphere
 
 
+
+#/gps/source/list #lists out the ions, usually can be commented out, just for debbuging!
+/run/beamOn 50000000 #the number of runs is HALF the number of ions on the probe since each run spawns one Cs ion and one Ba ion.

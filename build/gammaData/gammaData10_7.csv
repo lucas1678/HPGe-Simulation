@@ -1,9 +1,4 @@
-#class tools::wcsv::ntuple
-#title Data
-#separator 44
-#vector_separator 59
-#column double fEdep
-#column double runTime
+fEdep,runTime
 482.031,125.552
 1186.51,101.466
 31.41,101.466

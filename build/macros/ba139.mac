@@ -9,7 +9,7 @@
 /gps/pos/centre 0 -0.25 0.45 cm #centre of volume source, middle value is height!
 /gps/pos/radius 0.635 cm  #radius of source sphere
 
-/run/beamOn 100000000
+/run/beamOn 15
 
 #/stepping/StopTime 30 #time to run simulation for, in minutes
 #/run/beamOn 100000

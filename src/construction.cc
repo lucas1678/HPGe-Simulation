@@ -128,34 +128,15 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 	logicWindow = new G4LogicalVolume(solidWindow, windowMat, "logicWindow");
 	physWindow = new G4PVPlacement(0, G4ThreeVector(0.,0.,7.*cm - 5*mm), logicWindow, "physWindow", logicWorld, false, 0, true);
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-/*//~~~~~~~~~~~~~~~~~~~~~Al Cylinder~~~~~~~~~~~~~~~~~~~~//
-
-	solidShield1 = new G4Tubs("solidShield1", detRadius, detRadius + 5.*mm, detLength + 60.*mm, 0*deg, 360*deg); //inner radius, outer radius, length, starting and stopping angle
-	logicShield1 = new G4LogicalVolume(solidShield1, shieldMat1, "logicShield1");
-	physShield = new G4PVPlacement(0, G4ThreeVector(0.,0.,12.*cm + detLength/2), logicShield1, "physShield1", logicWorld, false, 0, true);
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-//~~~~~~~~~~~~~~~~~~~~~Cu Cylinder~~~~~~~~~~~~~~~~~~~~//
-
-	solidShield2 = new G4Tubs("solidShield2", detRadius + 5.*mm, detRadius + 10.*mm, detLength+ 60.*mm, 0*deg, 360*deg); //inner radius, outer radius, length, starting and stopping angle
-	logicShield2 = new G4LogicalVolume(solidShield2, shieldMat2, "logicShield2");
-	physShield2 = new G4PVPlacement(0, G4ThreeVector(0.,0.,12.*cm + detLength/2), logicShield2, "physShield2", logicWorld, false, 0, true);
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-//~~~~~~~~~~~~~~~~~~~~~Pb Cylinder~~~~~~~~~~~~~~~~~~~~//
-
-	solidShield3 = new G4Tubs("solidShield3", detRadius + 10.*mm, detRadius + 15.*mm, detLength+ 60.*mm, 0*deg, 360*deg); //inner radius, outer radius, length, starting and stopping angle
-	logicShield3 = new G4LogicalVolume(solidShield3, shieldMat3, "logicShield3");
-	physShield3 = new G4PVPlacement(0, G4ThreeVector(0.,0.,12.*cm + detLength/2), logicShield3, "physShield3", logicWorld, false, 0, true);
-*/
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 //~~~~~~~~~~~~~~~~~~~~Xe Volume~~~~~~~~~~~~~~~~~~~~~~~~~~//
-	solidXeVolume = new G4Sphere("solidXeVolume", 0.0*m, 0.0614*m, 0*deg, 360*deg, 0*deg, 180*deg);
+	G4VSolid *solidXeVolume1 = new G4Sphere("solidXeVolume1", 0.0*m, 0.0614*m, 0*deg, 360*deg, 0*deg, 180*deg);
+	G4VSolid *solidXeVolume2 = new G4Tubs("solidXeVolume2", 30.*mm, (7.07/2.)*cm, 31.33*cm, 0*deg, 360*deg);
+	G4VSolid *solidXeVolume = new G4UnionSolid("solidXeVolume", solidXeVolume1, solidXeVolume2, 0, G4ThreeVector(0,0,30*cm));
 	logicXeVolume = new G4LogicalVolume(solidXeVolume, xeMat, "logicXeVolume");
 	physXeVolume = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.), logicXeVolume, "physXeVolume", logicWorld, false, 0, true);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-//~~~~~~~~~~~~~~~~~~~~Window~~~~~~~~~~~~~~~~~~~~~~~~~~//
+//~~~~~~~~~~~~~~~~~~~~Window(REMOVE?)~~~~~~~~~~~~~~~~~~~~~~~~~~//
 	if(spawnWindow == true)
 	{
 		solidWindow = new G4Tubs("solidWindow", 0.*mm, 80.*mm, 0.5*mm, 0*deg, 360*deg); //inner radius, outer radius, length, starting and stopping angle

@@ -39,10 +39,10 @@ void backgroundScaling(TH1F *bckgHist, int &bckgEntries, int gammaEntries, doubl
 
 
 
-unordered_map<string, double> peakFitting(int binNumber, TH1F *bckgHist, double bckgCounts[], int simBckgEntries, double timeFinal, bool drawBool, bool saveBool) //timeFinal in MINUTES
+unordered_map<string, double> peakFitting(int binNumber, TH1F *bckgHist, double bckgCounts[], int simBckgEntries, int timeFinal, bool drawBool, bool saveBool) //timeFinal in MINUTES
 {
 	auto simTimeCut = [timeFinal](double time){return (time < timeFinal);};
-	RDataFrame df = ROOT::RDF::MakeCsvDataFrame("gammaData10_8.csv"); 
+	RDataFrame df = ROOT::RDF::MakeCsvDataFrame("gammaData/gammaDataFinal10_7.csv"); 
 	auto simGammaHist = df.Filter(simTimeCut, {"runTime"}).Histo1D({"gamma", "SimGammaHist;Energy[keV];Counts", binNumber, 0, 400}, "fEdep");
 	
 	TH1F *simTotalHist = new TH1F("simTotalHist", "Simulated Spectrum", binNumber, 0, 400);
@@ -167,10 +167,6 @@ unordered_map<string, double> peakFitting(int binNumber, TH1F *bckgHist, double 
 	f2->SetParLimits(3, bckgValue166-0.01, bckgValue166+0.01);
 	f2->SetParameters(Amp166, 165.86, 0.15, bckgValue166);
 
-	//deconvHist->Fit(f1, "N","0", FitStart1, FitEnd1);
-	//deconvHist->Fit(f2, "N","0", FitStart2, FitEnd2);
-	//noBckgHist->Fit(f1, "N","0", FitStart1, FitEnd1);
-	//noBckgHist->Fit(f2, "N","0", FitStart2, FitEnd2);
 	simTotalHist->Fit(f1, "N","0", FitStart1, FitEnd1);
 	simTotalHist->Fit(f2, "N","0", FitStart2, FitEnd2);
 
@@ -196,10 +192,13 @@ unordered_map<string, double> peakFitting(int binNumber, TH1F *bckgHist, double 
 	TCanvas *dualCanvas = new TCanvas("DualCanvas", "DualCanvas", 1280, 700); //last 2 num are width and height
 	if(drawBool == true)
 	{
-		simTotalHist->SetTitle(("Simulation Histogram Time: " + std::to_string(timeFinal)).c_str());
+		std::string timeFinalStr = std::to_string(timeFinal);
+		std::string title1 = "Simulation Histogram Time: " + timeFinalStr +"min";
+		std::string title2 = "Background Removed Histogram Time: " + timeFinalStr +"min";
+		simTotalHist->SetTitle(title1.c_str());
 		simTotalHist->GetXaxis()->SetTitle("Energy (keV)");
 		simTotalHist->GetYaxis()->SetTitle("Counts");
-		noBckgHist->SetTitle(("Background Removed Histogram Time: " + std::to_string(timeFinal)).c_str());
+		noBckgHist->SetTitle(title2.c_str());
 		noBckgHist->GetXaxis()->SetTitle("Energy (keV)");
 		noBckgHist->GetYaxis()->SetTitle("Counts");
 		noBckgHist->GetYaxis()->SetRangeUser(0, 1.1*(noBckgHist->GetMaximum()));
@@ -240,7 +239,7 @@ unordered_map<string, double> peakFitting(int binNumber, TH1F *bckgHist, double 
 		percentString.erase ( percentString.find_last_not_of('0') + 1, std::string::npos );
 		percentString.erase ( percentString.find_last_not_of('.') + 1, std::string::npos );
 		string timeString = to_string(timeFinal);
-		string fileName = "histo" + timeString + ".png";
+		string fileName = "histo" + timeString + "min.png";
 		dualCanvas->Print(fileName.c_str());
 	}
 
@@ -297,7 +296,7 @@ void testAnalysis()
 	vector<double> Counts33; 
 	unordered_map<string, double> statMap;
 
-	double upperTime = 180.0; //IN MINUTES
+	double upperTime = 60.0; //IN MINUTES
 	double incrementSize = 5.0;
 	
 	for(double i=incrementSize; i<=upperTime; i+=incrementSize)

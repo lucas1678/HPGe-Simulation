@@ -46,7 +46,7 @@ private:
 	G4LogicalVolume *fScoringVolume;
 	
 	G4Box *solidAtmosphere, *solidWorld, *solidTip3;
-	G4Sphere *solidXeVolume;
+	//G4Sphere *solidXeVolume;
 	G4VSolid *solidTip2_1, *solidTip2_2, *solidTip2, *solidTipConnector1, *solidTipConnector2, *solidTipConnector, *solidTipConnector_2, *solidTipConnector3, *solidTipConnector4, *solidChamberSide3_1, *solidChamberSide3_2, *solidChamberSide3;
 	
 	G4LogicalVolume *logicDet, *logicAtmosphere[10], *logicWorld, *logicShield1, *logicShield2, *logicShield3, *logicXeVolume, *logicWindow, *logicChamber, *logicProbe, *logicTip, *logicTip2, *logicTip3, *logicTipConnector, *logicTipConnector_2, *logicHousing, *logicChamberSide, *logicChamberSide2, *logicChamberSide3, *logicChamberSide4, *logicGear;
