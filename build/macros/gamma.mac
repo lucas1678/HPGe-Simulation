@@ -1,2 +1,20 @@
-/gun/particle gamma
-/run/beamOn 1000
+/gps/particle e-
+/gps/pos/type Beam
+
+/gps/pos/shape Circle
+/gps/pos/radius 0. mm
+/gps/pos/centre 0 0.1 3800 cm #centre of volume source, middle value is height!
+
+/gps/pos/rot1 0 1 0 
+/gps/pos/rot2 0 0 1
+
+/gps/ang/rot1 1 0 0
+/gps/ang/rot2 0 1 0
+/gps/ang/type beam1d
+/gps/ang/sigma_r 0. deg
+
+/gps/ene/type Gauss
+/gps/ene/mono 800 keV
+/gps/ene/sigma 10 keV
+
+/run/beamOn 100000

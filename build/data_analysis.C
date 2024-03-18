@@ -4,16 +4,17 @@ void data_analysis()
 	int comparisonBinNumber = 1000;	//922
 	int simBinNumber = 1000;
 
-	TH1F *simGammaHist = new TH1F("simGammaHist", "Just Gamma", simBinNumber, 0, 400); 
-	TH1F *simBackgroundHist = new TH1F("simBackgroundHist", "SimBckg", simBinNumber, 0, 400);
-	TH1F *simTotalHist = new TH1F("simTotalHist", "Simulated Spectrum", simBinNumber, 0, 400);
-	TH1F *comparisonHist = new TH1F("comparisonHist", "Real Spectrum", comparisonBinNumber, 0, 400);
-	TH1F *comparisonNoBckg = new TH1F("comparisonNoBckg", "comparisonNoBckg", comparisonBinNumber, 0, 400);
-	TH1F *deconvHist = new TH1F("deconvHist", "deconvHist", comparisonBinNumber, 0, 400);	
+	TH1F *simGammaHist = new TH1F("simGammaHist", "Only Gamma Simulated", simBinNumber, 0, 900); 
+	TH1F *simBackgroundHist = new TH1F("simBackgroundHist", "SimBckg", simBinNumber, 0, 900);
+	TH1F *simTotalHist = new TH1F("simTotalHist", "Simulated Spectrum", simBinNumber, 0, 900);
+	TH1F *comparisonHist = new TH1F("comparisonHist", "Real Spectrum", comparisonBinNumber, 0, 900);
+	TH1F *comparisonNoBckg = new TH1F("comparisonNoBckg", "comparisonNoBckg", comparisonBinNumber, 0, 900);
+	TH1F *deconvHist = new TH1F("deconvHist", "deconvHist", comparisonBinNumber, 0, 900);
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~OPENING FILES~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	double value;
 	fstream file;
+	cout << "first message" << endl;
 
 	file.open("gammaData.txt", ios::in);
 	while(1)
@@ -23,6 +24,8 @@ void data_analysis()
 		if(file.eof()) break;
 	}
 	file.close();
+
+	cout << "second message" << endl;
 	
 
 	file.open("realBackground.txt", ios::in);
@@ -40,10 +43,10 @@ void data_analysis()
 	{
 		file >> value;
 		comparisonHist->Fill(value);
-		if(file.eof()) break;
+		if(file.eof()) break;	
 	}
-
 	file.close();
+	cout << "third message" << endl;
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~GETTING ENTRIES~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//to get total entries, since for some reason when u scale weights root does not calculate this:
@@ -57,8 +60,6 @@ void data_analysis()
 		realTotalEntries+=comparisonHist->GetBinContent(i);
 	}
 	cout << "Real total entries are: " << realTotalEntries << endl;
-
-
 
 
 	for (int i=0; i<simBinNumber+2; i++)
@@ -173,15 +174,16 @@ void data_analysis()
 		//simGammaHist->SetBinContent(i, 0.5*(simGammaHist->GetBinContent(i)));
 		simTotalEntries+=simTotalHist->GetBinContent(i);
 		finalBinCounts[i] = simTotalHist->GetBinContent(i);
+		//finalBinCounts[i] = simGammaHist->GetBinContent(i);
 	}
 
 	cout << "Simulation total entries (gamma + bckg) are: " << simTotalEntries << endl;
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~PEAK FITTING~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~PEAK FINDING~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	TSpectrum *s = new TSpectrum();
 	int peaksFound = 0;
 	//simTotalHist->GetXaxis()->SetRangeUser(0,900);
-	peaksFound = s->SearchHighRes(finalBinCounts, dest, simBinNumber, 6, 10, kTRUE, 100, kTRUE, 3);
+	peaksFound = s->SearchHighRes(finalBinCounts, dest, simBinNumber, 6, 6, kTRUE, 100, kTRUE, 3);
 	// above goes like (...,sigma,threshold,bckgRemove,iterations,markovON/OFF, averWindow)
 	Double_t *xpeaks = s->GetPositionX();
 	Double_t a;
@@ -191,9 +193,14 @@ void data_analysis()
 	for (int i = 0; i < peaksFound; i++) 
 	{
 		a=xpeaks[i];
-		bin = 1 + Int_t(a + 0.5);
+		bin = Int_t(a + 0.5);
 		fPositionX[i] = simTotalHist->GetBinCenter(bin);
 		fPositionY[i] = simTotalHist->GetBinContent(bin);
+		cout << "a: " << a << endl;
+		cout << "bin: " << bin << endl;
+		cout << "fPositionX: " << fPositionX << endl;
+		cout << "fPositionY: " << fPositionY << endl;
+		cout << "peaksFound " << peaksFound << endl;
 		
 	}
 	
@@ -211,6 +218,38 @@ void data_analysis()
 	
 	for(int i=0; i < comparisonBinNumber+2; i++) deconvHist->SetBinContent(i, dest[i]);
 	deconvHist->SetLineColor(kRed);
+
+//------FOR NO BACKGROUND:
+	/*double dest[simBinNumber];
+	double source[simBinNumber];
+	TSpectrum *nb = new TSpectrum();
+	int peaks = 0;
+	peaks = nb->SearchHighRes(source, dest, simBinNumber, 6, 10, kTRUE, 100, kTRUE, 3);
+	Double_t *fxpeaks = nb->GetPositionX();
+	Double_t b;
+	Int_t bins;	
+	Double_t fPositionX[100];
+	Double_t fPositionY[100];
+	for (int i=0;i<peaks;i++)
+	{
+		b = fxpeaks[i];
+		bins = 1+ Int_t(b+0.5);
+		fPositionX[i] = simGammaHist->GetBinCenter(bins);
+		fPositionY[i] = simGammaHist->GetBinCenter(bins);
+	}
+	
+	TPolyMarker *marker = (TPolyMarker*)simGammaHist->GetListOfFunctions()->FindObject("TPolyMarker");
+	if (marker)
+	{
+		simGammaHist->GetListOfFunctions()->Remove(marker);
+		delete marker;
+	}
+	marker = new TPolyMarker(peaks,fPositionX, fPositionY);
+	simGammaHist->GetListOfFunctions()->Add(marker);
+	marker->SetMarkerStyle(23);
+	marker->SetMarkerColor(kRed);
+	marker->SetMarkerSize(1.3);*/
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~BACKGROUND REMOVAL~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	TH1 *estimatedBackground = s->Background(comparisonHist, 50);
@@ -239,18 +278,15 @@ void data_analysis()
 	//f1->SetParameters(40, 5.6, 0.15, 40, 6.2, 0.15, simBackgroundHist->GetBinContent((FitStart1+FitEnd1)/2));
 	TF1 *f1 = new TF1("f1", "gausn(0)", FitStart1, FitEnd1);
 	f1->SetParameters(40, 33.20, 0.25);
-	f1->SetParLimits(1, 33.0, 33.5);
+	f1->SetParLimits(1, 25.0, 35.0);
 	f1->SetParLimits(2, 0.2, 5.0);
 	//TF1 *f1 = new TF1("f1", "gausn(0) + [3]",FitStart, FitEnd);
 	//f1->SetParameters(50, 778.917, 1.005, 5);
 
 	TF1 *f2 = new TF1("f2", "gausn(0)",FitStart2, FitEnd2);
 	f2->SetParameters(50, 165.86, 0.15);
-	f2->SetParLimits(1, 165.4, 166.0); //165.86
+	f2->SetParLimits(1, 155.0, 166.0); //165.86
 	f2->SetParLimits(2, 0.2, 5.0);
-
-
-	
 
 	deconvHist->Fit(f1, "R","", FitStart1, FitEnd1);
 	deconvHist->Fit(f2, "R","", FitStart2, FitEnd2);
@@ -278,8 +314,8 @@ cout << "Total Integral is: " << comparisonNoBckg->Integral(bmin,bmax) << endl;*
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~DRAWING EVERYTHING~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	simTotalHist->GetXaxis()->SetTitle("Energy (keV)");
 	simTotalHist->GetYaxis()->SetTitle("Counts");
-	comparisonHist->GetXaxis()->SetTitle("Energy (keV)");
-	comparisonHist->GetYaxis()->SetTitle("Counts");
+	/*comparisonHist->GetXaxis()->SetTitle("Energy (keV)");
+	comparisonHist->GetYaxis()->SetTitle("Counts");*/
 
 
 	TCanvas *c1 = new TCanvas();
@@ -291,20 +327,20 @@ cout << "Total Integral is: " << comparisonNoBckg->Integral(bmin,bmax) << endl;*
 	//deconvHist->Draw("SAME");
 	string percentString = to_string(percentBckg);
 	percentString.erase ( percentString.find_last_not_of('0') + 1, std::string::npos );
-	percentString.erase ( percentString.find_last_not_of('.') + 1, std::string::npos );
+	percentString.erase ( percentString.find_last_not_of('.') + 1, std::string::npos	);
 	string entriesString = to_string(simGammaEntries);
 	string fileName = percentString + "histo" + entriesString + ".png";
-	c1->Print(fileName.c_str());
+	//c1->Print(fileName.c_str()); saves pic of histo. lowkey useless, i've just been screenshotting
 
 
 	/*TCanvas *c2 = new TCanvas();
 	c2->cd();
 	comparisonHist->Draw("L");
-	//estimatedBackground->Draw("SAME");
+	//estimatedBackground->Draw("SAME");*/
 	
 
 	TCanvas *c3 = new TCanvas();
 	c3->cd();
-	simGammaHist->Draw();*/
+	simGammaHist->Draw();
 }
 

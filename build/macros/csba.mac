@@ -1,0 +1,24 @@
+#For the generation of 139Cs and 139Ba on a 1:1 ratio
+
+/gps/source/clear
+/gps/source/multiplevertex true
+/gps/particle ion
+
+/gps/source/add 1
+/gps/ion 56 139 0 0
+/gps/direction -1 0 0 
+/gps/energy 0
+
+/gps/source/add 1
+/gps/ion 55 139 0 0 
+#/gps/energy 0
+#/gps/direction -1 0 0
+#/gps/pos/centre 0 0 0 
+
+/gps/pos/type Volume
+/gps/pos/shape Sphere
+/gps/pos/centre 0 -0.25 0.45 cm
+/gps/pos/radius 0.635 cm
+
+/run/beamOn  1000000000
+

@@ -6,7 +6,7 @@ void backgroundAnalysis()
 
 	Double_t value;
 	fstream file;
-	file.open("realBackground.txt", ios::in);
+	file.open("gammaData.txt", ios::in);
 	while(1)
 	{
 		file >> value;
@@ -14,9 +14,6 @@ void backgroundAnalysis()
 		if(file.eof()) break;
 	}	
 	file.close();
-
-
-
 
 	TCanvas *c1 = new TCanvas();
 	backgroundHist->Draw();

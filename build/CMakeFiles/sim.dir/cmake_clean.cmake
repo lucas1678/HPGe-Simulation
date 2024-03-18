@@ -15,6 +15,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/sim.dir/src/physics.cc.o.d"
   "CMakeFiles/sim.dir/src/run.cc.o"
   "CMakeFiles/sim.dir/src/run.cc.o.d"
+  "CMakeFiles/sim.dir/src/stackingaction.cc.o"
+  "CMakeFiles/sim.dir/src/stackingaction.cc.o.d"
   "CMakeFiles/sim.dir/src/stepping.cc.o"
   "CMakeFiles/sim.dir/src/stepping.cc.o.d"
   "sim"

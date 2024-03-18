@@ -7,7 +7,7 @@ MyRunAction::MyRunAction()
 	
 	analysisManager->CreateNtuple("Energy Deposition", "Energy Deposition");
 	analysisManager->CreateNtupleDColumn("fEdep");
-	analysisManager->CreateNtupleDColumn("runTime"); //new
+	//analysisManager->CreateNtupleDColumn("runTime"); //new
 	analysisManager->FinishNtuple(0);
 	
 	

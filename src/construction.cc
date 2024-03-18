@@ -9,10 +9,13 @@ MyDetectorConstruction::MyDetectorConstruction()
 	detLength = 80.*mm;
 
 	fMessenger->DeclareProperty("detRadius", detRadius, "Radius of detector arrangement").SetUnit("mm");
-	detRadius = 70.*mm;
+	detRadius = 4.0*mm; //slightly less than window
 
-	fMessenger->DeclareProperty("worldMatChoice", worldMatChoice, "Material Between Detector and Source");
-	worldMatChoice = "G4_AIR";
+	fMessenger->DeclareProperty("sourceHeight", sourceHeight, "Height of the radioactive source (z-level)").SetUnit("mm");
+	sourceHeight = 0.*mm;
+
+	//fMessenger->DeclareProperty("worldMatChoice", worldMatChoice, "Material Between Detector and Source");
+	//worldMatChoice = "G4_AIR";
 
 	fMessenger->DeclareProperty("spawnBackWall", spawnBackWall, "Spawn Wall Behind Source for Backscattering Effects");
 	spawnBackWall = false;
@@ -35,26 +38,14 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 	G4cout << "Construct() called, and value of detLength is: " << detLength << G4endl;
 
 //~~~~~~~~~~~~~~~~~~~~~~~MATERIALS~~~~~~~~~~~~~~~~~~~~~~~//
-
 	G4NistManager *nist = G4NistManager::Instance();
 
-	G4Material *worldMat = nist->FindOrBuildMaterial(worldMatChoice);
+	G4Material *worldMat = nist->FindOrBuildMaterial("G4_Galactic"); 
 	G4MaterialPropertiesTable *mptWorld = new G4MaterialPropertiesTable();
 	G4double rindexWorld[2] = {1.0, 1.0};
 	G4double energy[2] = {2.038*eV, 4.144*eV};
-	if(worldMatChoice == "G4_AIR")
-	{
-		energy[0] = 2.038*eV;
-		energy[1] = 4.144*eV;
-	}
-	else if(worldMatChoice == "G4_Xe")
-	{
-		energy[0] = 2.038*eV;
-		energy[1] = 4.144*eV;
-	}
 	mptWorld->AddProperty("RINDEX", energy, rindexWorld, 2);
 	worldMat->SetMaterialPropertiesTable(mptWorld);
-
 
 	G4Material *detMat = nist->FindOrBuildMaterial("G4_Ge");
 	G4MaterialPropertiesTable *mptDet = new G4MaterialPropertiesTable();
@@ -84,32 +75,35 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 	mptShield3->AddProperty("RINDEX", energy, rindexShield3, 2);
 	shieldMat3->SetMaterialPropertiesTable(mptShield3);
 
-	G4Material *probeMat = nist->FindOrBuildMaterial("G4_Cu");
-	G4MaterialPropertiesTable *mptProbe = new G4MaterialPropertiesTable();
-	G4double rindexProbe[2] = {1.0, 1.0}; //change? probe shouldnt be repulsive
-	//G4double energy[2] = {2.038*eV, 4.144*eV};
-	mptProbe->AddProperty("RINDEX", energy, rindexProbe, 2);
-	probeMat->SetMaterialPropertiesTable(mptProbe);
+	G4Material *steelMat = nist->FindOrBuildMaterial("G4_STAINLESS-STEEL");
+	G4MaterialPropertiesTable *mptSteel = new G4MaterialPropertiesTable();
+	mptSteel->AddProperty("RINDEX", energy, rindexShield3, 2);
+	steelMat->SetMaterialPropertiesTable(mptSteel);
 
-	G4MaterialPropertiesTable *mptintersectMat = new G4MaterialPropertiesTable();
-	G4double rindexintersectMat[2] = {1.0,1.0};
-	mptintersectMat->AddProperty("RINDEX", energy, rindexintersectMat, 2);
+	//G4Material *XenonU = nist->FindOrBuildMaterial("G4_Xe");
+	/*G4Isotope *iXe = new G4Isotope("iXe", 54, 139,
+	G4double density = 5 *mg/cm3;
+	G4double temperature = 200 *kelvin;
+	G4double pressure = 1. *atmosphere;
+	G4int ncomponents;
+	G4Material *xeMat = new G4Material("XenonGas", density, ncomponents=1, kStateGas, temperature, pressure);
+	xeMat->AddMaterial(XenonU, 1.);*/
 
-	Mn = nist->FindOrBuildElement("Mn");
-	Si = nist->FindOrBuildElement("Si");
-	Cr = nist->FindOrBuildElement("Cr");
-	Ni = nist->FindOrBuildElement("Ni");
-	Fe = nist->FindOrBuildElement("Fe");
-	intersectMat = new G4Material("intersectMat", 8.03*g/cm3, 5);
-	intersectMat->AddElement(Mn, 0.02*perCent);
-	intersectMat->AddElement(Si, 0.01*perCent);
-	intersectMat->AddElement(Cr, 0.19*perCent);
-	intersectMat->AddElement(Ni, 0.10*perCent);
-	intersectMat->AddElement(Fe, 0.68*perCent);
- 
-	intersectMat->SetMaterialPropertiesTable(mptintersectMat); //stainless steel
+	G4int nElements, natoms;
+	G4double abundance;
+	G4int z=54;
+	G4int n=130;
+	G4double density= 0.005458 * g/cm3;
+	G4double a = 129.90351 * g/mole;  // Atomic mass of xenon-139
+	G4double xeTemperature = 200 * kelvin;
+	G4double xePressure = 1.0 * atmosphere;
+	G4State state=kStateGas;
 
-	G4Material *xeMat = nist->FindOrBuildMaterial("G4_Xe");
+	G4Isotope* iXe = new G4Isotope("Xenon130", z, n, a);
+	G4Element* elXe = new G4Element("Xenon130", "elXe", 1);
+	elXe->AddIsotope(iXe, abundance = 100.0 *perCent);
+	G4Material* xeMat = new G4Material("Xenon130Gas", density, nElements = 1, state, xeTemperature, xePressure);
+	xeMat->AddElement(elXe, natoms = 1);
 
 	G4Material *windowMat = nullptr;
 	if(windowMatChoice == "G4_Be"){windowMat = nist->FindOrBuildMaterial(windowMatChoice);} 
@@ -118,198 +112,185 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 	G4double rindexWindow[2] = {1.0, 1.0};
 	mptWindowMat->AddProperty("RINDEX", energy, rindexWindow, 2);
 	windowMat->SetMaterialPropertiesTable(mptWindowMat);
-
-	G4RotationMatrix *RotProbe = new G4RotationMatrix();
-	RotProbe->rotateX(90.*deg);
-	RotProbe->rotateY(0.*deg);
-	RotProbe->rotateZ(0.*deg);
-
 	
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 //~~~~~~~~~~~~~~~~~~~~~~~WORLD~~~~~~~~~~~~~~~~~~~~~~~~~//
 
-	solidWorld = new G4Box("solidWorld", 2.*m, 2.*m, 3.*m);
+	solidWorld = new G4Box("solidWorld", 1.*m, 1.*m, 1.*m);
 	logicWorld = new G4LogicalVolume(solidWorld, worldMat, "logicWorld");
-	physWorld = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.*m), logicWorld, "physWorld", 0, false, 0, true);
+	physWorld = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.), logicWorld, "physWorld", 0, false, 0, true);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-//~~~~~~~~~~~~~~~~~~~~~~~~HOLLOW SPHERE~~~~~~~~~~~~~~~~~~~~~~//
+//~~~~~~~~~~~~~~~~~~~~~~~Ge_Crystal~~~~~~~~~~~~~~~~~~~~~~//
+	//detOffset = 15.*mm;
 
-	G4Sphere *solidShell = new G4Sphere("solidShell", 0.15*m, 0.16*m, 0, 360, 0, 360);
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-//~~~~~~~~~~~~~~~~~~~~~~~~CUBE~~~~~~~~~~~~~~~~~~~~~~//
-
-	G4Box *solidCube = new G4Box("solidCube", 0.124*m, 0.124*m, 0.124*m);
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-//~~~~~~~~~~~~~~~~~~~~~~~~INTERSECTION~~~~~~~~~~~~~~~~~~~~~~//
-
-	solidIntersect = new G4IntersectionSolid("Cube&&Shell", solidCube, solidShell);
-	logicIntersect = new G4LogicalVolume(solidIntersect, intersectMat, "logicIntersect");
-	physIntersect = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.), logicIntersect, "physIntersect", logicWorld, false, 0, true); 
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-//~~~~~~~~~~~~~~~~~~~~~~~PROBE~~~~~~~~~~~~~~~~~~~~~~//
-
-	solidProbe = new G4Tubs("solidArmOut", 0.0117*m, 0.0127*m, 1.0597*m, 0*deg, 360*deg);
-	logicProbe = new G4LogicalVolume(solidProbe, probeMat, "logicProbe");
-	physProbe = new G4PVPlacement(RotProbe, G4ThreeVector(0.,1.07*m,0.), logicProbe, "physProbe", logicWorld, false, 0, true);
-
-	solidTip = new G4Tubs("solidTube", 0.*m, 0.0117*m, 0.001*m, 0*deg, 360*deg);
-	logicTip = new G4LogicalVolume(solidTip, probeMat, "logicTip");
-	physTip = new G4PVPlacement(RotProbe, G4ThreeVector(0.,0.010*m,0.), logicTip, "physTip", logicWorld, false, 0, true);
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-//~~~~~~~~~~~~~~~~~~~~~~~~OUTERMOUNT~~~~~~~~~~~~~~~~~~~~~~//
-
-	solidOuterMount = new G4Tubs("solidOuterMount", 0.07*m, 0.1135*m, 0.1135*m, 0*deg, 360*deg);
-	logicOuterMount = new G4LogicalVolume(solidOuterMount, intersectMat, "logicOuterMount");
-	physOuterMount = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.247*m), logicOuterMount, "physOuterMount", logicWorld, false, 0, true);
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-//~~~~~~~~~~~~~~~~~~~~~~~DETECTOR ARM OUT OUTER~~~~~~~~~~~~~~~~~~~~~~//
-
-	solidArmOut = new G4Tubs("solidArmOut", 0.07*m, 0.08*m, 0.4396*m, 0*deg, 360*deg); //inner radius, outer radius, length, starting and stopping angle
-	logicArmOut = new G4LogicalVolume(solidArmOut, intersectMat, "logicArmOut");
-	physArmOut = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.80*m /*half of arm length+half of cube length */), logicArmOut, "physArmOut", logicWorld, false, 0, true);
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-//~~~~~~~~~~~~~~~~~~~~~~~DETECTOR ARM XENON~~~~~~~~~~~~~~~~~~~~~~//
-
-	solidArmIn = new G4Tubs("solidArmIn", 0.*m, 0.07*m, 0.56*m, 0*deg, 360*deg); //inner radius, outer radius, length, starting and stopping angle
-	logicArmIn = new G4LogicalVolume(solidArmIn, xeMat, "logicArmIn");
-	physArmIn = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.68*m /*half of arm length+half of cube length */), logicArmIn, "physArmIn", logicWorld, false, 0, true);
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~// //replace mother volume with Arm?
-//~~~~~~~~~~~~~~~~~~~~~~~DETECTOR~~~~~~~~~~~~~~~~~~~~~~//
-	detOffset = 7.*mm;
-
-	solidDet = new G4Tubs("solidDet", 0*mm, detRadius, detLength - detOffset, 0*deg, 360*deg); //inner radius, outer radius, length, starting and stopping angle
+	solidDet = new G4Tubs("solidDet", 0*mm, detRadius, detLength/2., 0*deg, 360*deg); //inner radius, outer radius, length, starting and stopping angle
 	logicDet = new G4LogicalVolume(solidDet, detMat, "logicDet");
-	physDet = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.190*m), logicDet, "physDet", logicWorld, false, 0, true);
+	physDet = new G4PVPlacement(0, G4ThreeVector(0.,0.,7.*cm + detLength/2), logicDet, "physDet", logicWorld, false, 0, true);
 
 	fScoringVolume = logicDet;
-	//G4cout << "DETECTOR DISTANCEEEEEEE" << 3.4*cm - detOffset + detLength/2 << G4endl;
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-//~~~~~~~~~~~~~~~~~~~~~Al Cylinder~~~~~~~~~~~~~~~~~~~~//
+//~~~~~~~~~~~~~~~~~~~~~DET STEEL HOUSING + WINDOW~~~~~~~~~~~~~~//
+	/*solidHousing = new G4Tubs("solidHousing", 29*mm, 30*mm, (279./2.)*mm, 0*deg, 360*deg);
+	logicHousing = new G4LogicalVolume(solidHousing, steelMat, "logicHousing");
+	physHousing = new G4PVPlacement(0, G4ThreeVector(0,0,18.5*cm), logicHousing, "physHousing", logicWorld, false, 0, true);*/
 
-	solidShield1 = new G4Tubs("solidShield1", detRadius, detRadius + 5.*mm, detLength, 0*deg, 360*deg); //inner radius, outer radius, length, starting and stopping angle
+	/*solidWindow = new G4Tubs("solidWindow", 0.*mm, 29.*mm, 0.025*mm, 0*deg, 360*deg);
+	logicWindow = new G4LogicalVolume(solidWindow, windowMat, "logicWindow");
+	physWindow = new G4PVPlacement(0, G4ThreeVector(0.,0.,7.*cm - 5*mm), logicWindow, "physWindow", logicWorld, false, 0, true);*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+/*/~~~~~~~~~~~~~~~~~~~~~Al Cylinder~~~~~~~~~~~~~~~~~~~~//
+
+	solidShield1 = new G4Tubs("solidShield1", detRadius, detRadius + 5.*mm, detLength + 60.*mm, 0*deg, 360*deg); //inner radius, outer radius, length, starting and stopping angle
 	logicShield1 = new G4LogicalVolume(solidShield1, shieldMat1, "logicShield1");
-	physShield = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.190*m), logicShield1, "physShield1", logicWorld, false, 0, true);
+	physShield = new G4PVPlacement(0, G4ThreeVector(0.,0.,12.*cm + detLength/2), logicShield1, "physShield1", logicWorld, false, 0, true);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 //~~~~~~~~~~~~~~~~~~~~~Cu Cylinder~~~~~~~~~~~~~~~~~~~~//
 
-	solidShield2 = new G4Tubs("solidShield2", detRadius + 5.*mm, detRadius + 10.*mm, detLength, 0*deg, 360*deg); //inner radius, outer radius, length, starting and stopping angle
+	solidShield2 = new G4Tubs("solidShield2", detRadius + 5.*mm, detRadius + 10.*mm, detLength+ 60.*mm, 0*deg, 360*deg); //inner radius, outer radius, length, starting and stopping angle
 	logicShield2 = new G4LogicalVolume(solidShield2, shieldMat2, "logicShield2");
-	physShield2 = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.190*m), logicShield2, "physShield2", logicWorld, false, 0, true);
+	physShield2 = new G4PVPlacement(0, G4ThreeVector(0.,0.,12.*cm + detLength/2), logicShield2, "physShield2", logicWorld, false, 0, true);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 //~~~~~~~~~~~~~~~~~~~~~Pb Cylinder~~~~~~~~~~~~~~~~~~~~//
 
-	solidShield3 = new G4Tubs("solidShield3", detRadius + 10.*mm, detRadius + 15.*mm, detLength, 0*deg, 360*deg); //inner radius, outer radius, length, starting and stopping angle
+	solidShield3 = new G4Tubs("solidShield3", detRadius + 10.*mm, detRadius + 15.*mm, detLength+ 60.*mm, 0*deg, 360*deg); //inner radius, outer radius, length, starting and stopping angle
 	logicShield3 = new G4LogicalVolume(solidShield3, shieldMat3, "logicShield3");
-	physShield3 = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.190*m), logicShield3, "physShield3", logicWorld, false, 0, true);
-
+	physShield3 = new G4PVPlacement(0, G4ThreeVector(0.,0.,12.*cm + detLength/2), logicShield3, "physShield3", logicWorld, false, 0, true);
+*/
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-//~~~~~~~~~~~~~~~~~~~~Xe BOX~~~~~~~~~~~~~~~~~~~~~~~~~~//
-	solidXeBox = new G4Box("solidXeBox", 0.08*m, 0.08*m, 0.08*m);
-	logicXeBox = new G4LogicalVolume(solidXeBox, xeMat, "logicXeBox");
-	physXeBox = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.), logicXeBox, "physXeBox", logicWorld, false, 0, true);
+//~~~~~~~~~~~~~~~~~~~~Xe Volume~~~~~~~~~~~~~~~~~~~~~~~~~~//
+	/*solidXeVolume = new G4Sphere("solidXeVolume", 0.0*m, 0.0614*m, 0*deg, 360*deg, 0*deg, 180*deg);
+	logicXeVolume = new G4LogicalVolume(solidXeVolume, worldMat, "logicXeVolume");
+	physXeVolume = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.), logicXeVolume, "physXeVolume", logicWorld, false, 0, true);*/
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 //~~~~~~~~~~~~~~~~~~~~Window~~~~~~~~~~~~~~~~~~~~~~~~~~//
-	if(spawnWindow == true)
+	/*if(spawnWindow == true)
 	{
-		solidWindow = new G4Tubs("solidWindow", 0.*mm, 60.*mm, 0.25*mm, 0*deg, 360*deg); //inner radius, outer radius, length, starting and stopping angle
+		solidWindow = new G4Tubs("solidWindow", 0.*mm, 80.*mm, 0.5*mm, 0*deg, 360*deg); //inner radius, outer radius, length, starting and stopping angle
 		logicWindow = new G4LogicalVolume(solidWindow, windowMat, "logicWindow");
-		physWindow = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.145*m), logicWindow, "physWindow", logicWorld, false, 0, true);
-	}
+		physWindow = new G4PVPlacement(0, G4ThreeVector(0.,0.,11.*mm), logicWindow, "physWindow", logicWorld, false, 0, true);
+	}*/
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 //~~~~~~~~~~~~~~~~~~~~BACKWALL~~~~~~~~~~~~~~~~~~~~~~~~//
 
-	if(spawnBackWall == true)
+	/*if(spawnBackWall == true)
 	{
 		G4Box *solidTest = new G4Box("solidTest", 0.4*m, 0.4*m, 0.04*m);
 		G4LogicalVolume *logicTest = new G4LogicalVolume(solidTest, detMat, "logicTest");
 		G4VPhysicalVolume *physTest = new G4PVPlacement(0, G4ThreeVector(0.,0.,-12.*cm), logicTest, "physTest", logicWorld, false, 0, true);
-
-	}
-
-
-	/*G4OpticalSurface* OpWaterSurface = new G4OpticalSurface("WaterSurface");
-	OpWaterSurface->SetModel(glisur);
-	OpWaterSurface->SetType(dielectric_metal);
-	OpWaterSurface->SetFinish(polished);
-	G4LogicalSkinSurface* WaterSurface = new G4LogicalSkinSurface("WaterSurface",logicDet, OpWaterSurface);*/
-
-	/*G4double pp[2] = {2.038*eV, 4.144*eV};
-	G4double specularlobe[2] = {0.3, 0.3};
-	G4double specularspike[2] = {0.2, 0.2};
-	G4double backscatter[2] = {0.1, 0.1};
-	G4double rindex[2] = {1.35, 1.40};
-	G4double reflectivity[2] = {1.0, 1.0};
-	G4double efficiency[2] = {1.0, 1.0};
-	G4MaterialPropertiesTable *SurfaceMPT = new G4MaterialPropertiesTable();
-	SurfaceMPT->AddProperty("RINDEX", pp, rindex, 2);
-	SurfaceMPT->AddProperty("SPECULARLOBECONSTANT",pp,specularlobe,2);
-	SurfaceMPT->AddProperty("SPECULARSPIKECONSTANT",pp,specularspike,2);
-	SurfaceMPT->AddProperty("BACKSCATTERCONSTANT",pp,backscatter,2);
-	SurfaceMPT->AddProperty("REFLECTIVITY",pp,reflectivity,2);
-	SurfaceMPT->AddProperty("EFFICIENCY",pp,efficiency,2);
-	OpWaterSurface->SetMaterialPropertiesTable(SurfaceMPT);*/
-
-	/*G4double density0 = 1.29*kg/m3;
-	G4Element *N = new G4Element("Nitrogen", "N", 7, 14.01*g/mole);	
-	G4Element *O = new G4Element("Oxygen", "O", 8, 16.00*g/mole);	
-	G4double f = 3.;
-	G4double R = 8.1344626181532;
-	G4double g0 = 9.81;
-	G4double kappa = (f+2.)/f;
-	G4double T = 293.15;
-	G4double M = (0.3*16.00*g/mole + 0.7*14.01*g/mole)/1000.;
-	for(G4int i=0; i<10; i++)
-	{
-		std::stringstream stri;
-		stri << i;
-		G4double h = 40e3/10.*i;
-		G4double density = density0*pow((1-(kappa)/kappa*M*g0*h/(R*T)), (1/(kappa-1)));
-		Air[i] = new G4Material("G4_AIR_"+stri.str(), density, 2);
-		Air[i]->AddElement(N, 70*perCent);
-		Air[i]->AddElement(O, 30*perCent);
-	}
-	solidAtmosphere = new G4Box("solidAtmosphere", 40*km, 40*km, 2*km);
-	for(G4int i = 0; i<10; i++)
-	{
-		logicAtmosphere[i] = new G4LogicalVolume(solidAtmosphere, Air[i], "logicAtmosphere");
-		physAtmosphere[i] = new G4PVPlacement(0, G4ThreeVector(0.,0.,(20.*km)/10.*2.*i - 20.*km + 2.*km), logicAtmosphere[i], "physAtmosphere", logicWorld, false, i, true);
 	}*/
 
-	/*G4VSolid* testcoatingsolid = new G4Trap("testcoatingsolid",5*cm,60*deg,60*deg,20*cm,20*cm,20*cm,0*deg,20*cm,20*cm,20*cm,0*deg);      
-        G4LogicalVolume* testcoatinglog = new G4LogicalVolume(testcoatingsolid,detMat,"testcoatinglog");
-        G4VPhysicalVolume* testcoatingphys = new G4PVPlacement(0,G4ThreeVector(0.,0.,10.*cm),testcoatinglog,"testcoatingphys",logicWorld,false,1,false);*/
+
+//~~~~~~~~~~~~~~~~~~~~MAIN CHAMBER~~~~~~~~~~~~~~~~~~~~~~// //CHANGE MATERIAL!!
+	G4RotationMatrix *rotationMatrix = new G4RotationMatrix(); //here
+ 
+	G4VSolid *solidSphereChamber = new G4Sphere("solidSphereChamber", 0.0614*m, 0.0812*m, 0*deg, 360*deg, 0*deg, 180*deg);
+	G4VSolid *solidBoxChamber = new G4Box("solidBoxChamber", 0.062*m, 0.062*m, 0.062*m);
+	G4VSolid *solidCylinderChamber = new G4Tubs("solidCylinderChamber", 0.0*m, 0.037*m, 0.124*m, 0*deg, 360*deg);
+	
+	G4VSolid *pre0_solidChamber = new G4IntersectionSolid("pre0_solidChamber", solidSphereChamber, solidBoxChamber, 0, G4ThreeVector(0,0,0)); //chamber with no holes
+	rotationMatrix->rotateX(90.0 * degree);
+	G4VSolid *solidChamber = new G4SubtractionSolid("solidChamber", pre0_solidChamber, solidCylinderChamber, rotationMatrix, G4ThreeVector(0,0,0)); //subtractin cylinder from chamber
+	rotationMatrix->rotateY(90.0 * degree);
+	G4VSolid *solidChamberFinal = new G4SubtractionSolid("solidChamberFinal", solidChamber, solidCylinderChamber, rotationMatrix, G4ThreeVector(0,0,0));
+	G4VSolid *solidChamberFinalForReal = new G4SubtractionSolid("solidChamberFinalForReal", solidChamberFinal, solidCylinderChamber, 0, G4ThreeVector(0,0,0));
+
+	logicChamber = new G4LogicalVolume(solidChamberFinalForReal, steelMat, "logicChamber");
+	physChamber = new G4PVPlacement(0, G4ThreeVector(0,0,0), logicChamber, "physChamber", logicWorld,false,0,true);
+
+//~~~~~~~~~~~~~~~CHAMBER SIDE DETECTOR HOUSING~~~~~~~~~~~~~~~//
+	/*solidChamberSide = new G4Tubs("solidChamberSide", (0.074/2.)*m, (0.105/2.)*m, (5.645/3)*cm, 0*deg, 360*deg); 
+	logicChamberSide = new G4LogicalVolume(solidChamberSide, steelMat, "logicChamberSide");
+	physChamberSide = new G4PVPlacement(0, G4ThreeVector(0,0,11.*cm), logicChamberSide, "physChamberSide", logicWorld,false,0,true);
+	
+	solidChamberSide2 = new G4Tubs("solidChamberSide2", (0.074/2.)*m, (0.105/2.)*m, (3.816/2.)*cm, 0*deg, 360*deg);
+	logicChamberSide2 = new G4LogicalVolume(solidChamberSide2, steelMat, "logicChamberSide2");
+	physChamberSide2 = new G4PVPlacement(0, G4ThreeVector(0,0,((2.697)+(5.645/2.)+9+(3.816/2.))*cm), logicChamberSide2, "physChamberSide2", logicWorld,false,0,true);
+
+	solidChamberSide3_1 = new G4Box("solidChamberSide3_1", (23.515/2.)*cm, (11.015/2.)*cm, (2.645/2.)*cm);
+	solidChamberSide3_2 = new G4Tubs("solidChamberSide3_2", 0*m, (0.105/2.)*m, (2.697/2.)*cm, 0*deg, 360*deg);
+	solidChamberSide3 = new G4SubtractionSolid("solidChamberSide3", solidChamberSide3_1, solidChamberSide3_2, 0, G4ThreeVector(6.5*cm,0,0));
+	logicChamberSide3 = new G4LogicalVolume(solidChamberSide3, steelMat, "logicChamberSide3");
+	physChamberSide3 = new G4PVPlacement(0, G4ThreeVector(-6.5*cm,0,((2.697/2.)+(5.645/2.)+9)*cm), logicChamberSide3, "physChamberSide3", logicWorld,false,0,true);
+
+	solidChamberSide4 = new G4Tubs("solidChamberSide4", (7.07/2.)*cm, (7.4/2.)*cm, (43.01/2.)*cm, 0*deg, 360*deg);
+	logicChamberSide4 = new G4LogicalVolume(solidChamberSide4, steelMat, "logicChamberSide4");
+	physChamberSide4 = new G4PVPlacement(0, G4ThreeVector(0,0,((2.697)+(5.645/2.)+9+3.816+(43.01/2.))*cm), logicChamberSide4, "physChamberSide4", logicWorld,false,0,true);
+
+	solidGearBase = new G4Tubs("solidGearBase", (7.366/2.)*cm, (10.49/2.)*cm, (3.505/2.)*cm, 0*deg, 360*deg);
+	G4VSolid *solidGearSub1 = new G4Tubs("solidGearSub1", ((7.366/2.)+1.1175)*cm, (11/2.)*cm, (3.6/2.)*cm, 0*deg, 36*deg);
+	G4VSolid *solidGearSub2 = new G4Tubs("solidGearSub2", ((7.366/2.)+1.1175)*cm, (11/2.)*cm, (3.6/2.)*cm, 72*deg, 36*deg);
+	G4VSolid *solidGearSub3 = new G4Tubs("solidGearSub3", ((7.366/2.)+1.1175)*cm, (11/2.)*cm, (3.6/2.)*cm, 144*deg, 36*deg);
+	G4VSolid *solidGearSub4 = new G4Tubs("solidGearSub4", ((7.366/2.)+1.1175)*cm, (11/2.)*cm, (3.6/2.)*cm, 216*deg, 36*deg);
+	G4VSolid *solidGearSub5 = new G4Tubs("solidGearSub5", ((7.366/2.)+1.1175)*cm, (11/2.)*cm, (3.6/2.)*cm, 288*deg, 36*deg);
+	G4VSolid *solidGearSub6 = new G4Tubs("solidGearSub6", ((7.366/2.)+1.1175)*cm, (11/2.)*cm, (3.6/2.)*cm, 225*deg, 15*deg);
+	G4VSolid *solidGearSub7 = new G4Tubs("solidGearSub7", ((7.366/2.)+1.1175)*cm, (10.6/2.)*cm, (3.6/2.)*cm, 270*deg, 15*deg);
+	G4VSolid *solidGearSub8 = new G4Tubs("solidGearSub8", ((7.366/2.)+1.1175)*cm, (10.6/2.)*cm, (3.6/2.)*cm, 315*deg, 15*deg);
+	G4VSolid *solidGear1 = new G4SubtractionSolid("solidGear1", solidGearBase, solidGearSub1);
+	G4VSolid *solidGear2 = new G4SubtractionSolid("solidGear2", solidGear1, solidGearSub2);
+	G4VSolid *solidGear3 = new G4SubtractionSolid("solidGear3", solidGear2, solidGearSub3);
+	G4VSolid *solidGear4 = new G4SubtractionSolid("solidGear4", solidGear3, solidGearSub4);
+	G4VSolid *solidGear5 = new G4SubtractionSolid("solidGear5", solidGear4, solidGearSub5);
+	G4VSolid *solidGear6 = new G4SubtractionSolid("solidGear6", solidGear5, solidGearSub6);
+	G4VSolid *solidGear7 = new G4SubtractionSolid("solidGear7", solidGear6, solidGearSub7);
+	G4VSolid *solidGear8 = new G4SubtractionSolid("solidGear8", solidGear7, solidGearSub8);
+	logicGear = new G4LogicalVolume(solidGear5, steelMat, "logicGear");
+	physGear = new G4PVPlacement(0, G4ThreeVector(0,0, 7.5*cm), logicGear, "physGear", logicWorld,false,0,true);*/
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+//~~~~~~~~~~~~~~~~~~~~VISUALISATION OF ION GENERATION ~~~~~~~~~~~~~~~~~~~~~~~~//
+
+	/*solidIonSphere = new G4Sphere("ionSphere", 0*cm, 0.635*cm, 0 *deg, 360 *deg, 0 *deg, 180 *deg);
+	logicIonSphere = new G4LogicalVolume(solidIonSphere, worldMat,"logicIonSphere");
+	physIonSphere  = new G4PVPlacement(0, G4ThreeVector(0,-0.25*cm,0.45*cm), logicIonSphere, "physIonSphere", logicWorld, false, 0, true);*/
+	
+
+//~~~~~~~~~~~~~~~~~~~~~~PROBE~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+	rotationMatrix->rotateX(0.*deg);
+	rotationMatrix->rotateY(90.*deg);
+	rotationMatrix->rotateZ(0.*deg);
 
 
+	solidProbe = new G4Tubs("solidArmOut", (0.0117/2.0)*m, (0.0127/2.0)*m, (1.0597/2.0)*m, 0*deg, 360*deg);
+	logicProbe = new G4LogicalVolume(solidProbe, steelMat, "logicProbe");
+	physProbe = new G4PVPlacement(rotationMatrix, G4ThreeVector(0.,((1.0597/2.0)+0.053)*m,0.), logicProbe, "physProbe", logicWorld, false, 0, true);
 
-        //making and placing the scintillator tile
+	solidTip = new G4Cons("solidTube", (0.0117/2.0)*m, (0.0127/2.0)*m, 0*m, (0.01/2.0)*m, 0.006*m, 0*deg, 360*deg);
+	logicTip = new G4LogicalVolume(solidTip, steelMat, "logicTip");
+	physTip = new G4PVPlacement(rotationMatrix, G4ThreeVector(0.,0.047*m,0.), logicTip, "physTip", logicWorld, false, 0, true);
 
-        //G4VSolid* testsolid        = new G4Trap("testsolid",scintthickness/2,taperanglex,taperangley,squarelong/2,squarelong/2,squarelong/2,zeroangle,scintsquarelength/2,scintsquarelength/2,scintsquarelength/2,zeroangle);
+	solidTip2_1 = new G4Box("solidTip2_1", 0.003*m, 0.001*m, 0.018*m);
+	solidTip2_2 = new G4Tubs("solidTip2_2", 0.*m, 0.003*m, 0.018*m, 180*deg, 180*deg);
+	solidTip2 = new G4UnionSolid("solidTip2", solidTip2_1, solidTip2_2, 0, G4ThreeVector(0,-0.0005*m,0));
+	logicTip2 = new G4LogicalVolume(solidTip2, steelMat, "logicTip2");
+	physTip2 = new G4PVPlacement(rotationMatrix, G4ThreeVector(0,0.023*m,0.001*m), logicTip2, "physTip2", logicWorld, false, 0, true);
 
-	//G4VSolid* testsolid        = new G4Trap("testsolid",scintthickness/2,taperanglex,taperangley,squarelong/2,squarelong/2,squarelong/2,zeroangle,scintsquarelength/2,scintsquarelength/2,scintsquarelength/2,zeroangle);
-        //G4LogicalVolume* testlog   = new G4LogicalVolume(testsolid,detMat,"testlog");
-        //G4VPhysicalVolume* testphys = new G4PVPlacement(rotateNull,moveNull,testlog,"testphys",testcoatinglog,false,1,false);
+	solidTip3 = new G4Box("solidTip3", 0.003*m, 0.0005*m, 0.019*m);
+	logicTip3 = new G4LogicalVolume(solidTip3, steelMat, "logicTip3");
+	physTip3 = new G4PVPlacement(rotationMatrix, G4ThreeVector(0,0.010*m,-0.0025*m), logicTip3, "physTip3", logicWorld, false, 0, true);
 
+	solidTipConnector1 = new G4Tubs("solidTipConnector1", 0.001*m, 0.0015*m, 0.001*m, 0*deg, 360*deg);
+	solidTipConnector2 = new G4Tubs("solidTipConnector2", 0.001*m, 0.0015*m, 0.001*m, 0*deg, 360*deg);
+	solidTipConnector = new G4UnionSolid("solidTipConnector", solidTipConnector1, solidTipConnector2, 0, G4ThreeVector(0,0.014*m,0));
 
-        //Adding the SiPMs to the tiles
+	logicTipConnector = new G4LogicalVolume(solidTipConnector, steelMat, "logicTipConnector");
+	physTipConnector = new G4PVPlacement(0, G4ThreeVector(0,0.012*m,-0.001*m), logicTipConnector, "physTipConnector", logicWorld, false, 0, true);
 
-	/*G4OpticalSurface* OpWaterSurface = new G4OpticalSurface("WaterSurface");
-	OpWaterSurface->SetModel(glisur);
-	OpWaterSurface->SetType(dielectric_metal);
-	OpWaterSurface->SetFinish(polished);
-        G4LogicalSkinSurface* skinn = new G4LogicalSkinSurface("skinn",testcoatinglog,OpWaterSurface);*/
+	solidTipConnector3 = new G4Tubs("solidTipConnector3", 0.0009*m, 0.0010*m, 0.0015*m, 0*deg, 360*deg);
+	solidTipConnector4 = new G4Tubs("solidTipConnector4", 0.0009*m, 0.0010*m, 0.0015*m, 0*deg, 360*deg);
+	solidTipConnector_2 = new G4UnionSolid("solidTipConnector_2", solidTipConnector3, solidTipConnector4, 0, G4ThreeVector(0,0.014*m,0));
 
+	logicTipConnector_2 = new G4LogicalVolume(solidTipConnector_2, steelMat, "logicTipConnector_2");
+	physTipConnector_2 = new G4PVPlacement(0, G4ThreeVector(0,0.012*m,-0.0045*m), logicTipConnector_2, "physTipConnector_2", logicWorld, false, 0, true); 
+//here
+//~~~~~~~~~~~~~PLACEHOLDER TO SHOW WHERE SPHERICAL SOURCE GOES~~~~~~~~~~~~~~~~~~~~~~~~//
+	/*G4Sphere *testy = new G4Sphere("testy", 0*m, 0.635*cm, 0*deg, 360*deg, 0*deg, 180*deg);
+	G4LogicalVolume *logicTesty = new G4LogicalVolume(testy, steelMat, "logicTesty");
+	G4PVPlacement *physTesty = new G4PVPlacement(0, G4ThreeVector(0,-0.25*cm,0.45*cm), logicTesty, "physTesty", logicWorld, false, 0,  true);*/
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
 	return physWorld;
 }

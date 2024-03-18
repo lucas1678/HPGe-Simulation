@@ -16,16 +16,10 @@ G4bool MySensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhis
 	G4StepPoint *postStepPoint = aStep->GetPostStepPoint();
 
 	G4ThreeVector momParticle = preStepPoint->GetMomentum();
-	//G4cout << "Particle Momentum: " << momParticle << G4endl;
 
 	G4double energyDep = aStep->GetTotalEnergyDeposit();
-	//G4cout << "Particle EDEP: " << energyDep << G4endl;
 
 	G4double particleTotalEnergy = preStepPoint->GetTotalEnergy();
-	//G4cout << "Particle Total Energy: " << particleTotalEnergy << G4endl;
-
-	//totalE += particleTotalEnergy;
-	//G4cout << "TOTAL E IS AT: " << totalE << G4endl;
 
 	return true;
 }

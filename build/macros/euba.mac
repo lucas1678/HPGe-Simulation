@@ -1,0 +1,60 @@
+/gps/source/clear
+/gps/source/multiplevertex true
+/gps/particle ion
+
+/gps/source/add 1
+/gps/ion 56 139 0 0
+/gps/direction -1 0 0 
+/gps/energy 0
+
+/gps/pos/type Volume
+/gps/pos/shape Sphere
+/gps/pos/centre 0 -0.25 0.45 cm
+/gps/pos/radius 0.635 cm
+
+/gps/source/add 1
+/gps/ion 63 152 0 0 
+#/gps/energy 0
+#/gps/direction -1 0 0
+#/gps/pos/centre 0 0 0 
+
+#/generator/add
+#/generator/combine 0 1
+
+/run/beamOn 10000000
+
+
+/*/gps/particle ion
+/gps/ion 56 139 0 0  #Z, A, 0, 0   #<---- Modify Z and A numbers to change radioisotope!
+/gps/direction -1 0 0 #momentum direction
+/gps/energy 0          #energy is 0 so isotope is spawning with 0 momentum
+#/gps/number 2
+
+/gps/particle ion
+/gps/ion 55 137 0 0  #Z, A, 0, 0   #<---- Modify Z and A numbers to change radioisotope!
+/gps/direction -1 0 0 #momentum direction
+/gps/energy 0          #energy is 0 so isotope is spawning with 0 momentum
+#/gps/number 2 
+
+/gps/pos/type Volume
+/gps/pos/shape Sphere  #spawn isotopes in spherical volume 
+/gps/pos/centre 0 -0.25 0.45 cm #centre of volume source, middle value is height!
+/gps/pos/radius 0.635 cm  #radius of source sphere
+
+/run/beamOn 1000000
+#/stepping/StopTime 30 #time to run simulation for, in minutes
+#/run/beamOn 100000
+
+#/gps/pos/centre 0 2 0 mm
+#/run/beamOn 100000
+
+#/gps/pos/centre 0 4 0 mm
+#/run/beamOn 100000
+
+#/gps/pos/centre 0 6 0 mm
+#/run/beamOn 100000
+
+#/gps/pos/centre 0 8 0 mm
+#/run/beamOn 100000
+
+#/gps/pos/centre 0 10 */

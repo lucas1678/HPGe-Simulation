@@ -19,4 +19,8 @@ void MyActionInitialization::Build() const
 
 	MySteppingAction *steppingAction = new MySteppingAction(eventAction);
 	SetUserAction(steppingAction);
+
+	//MyStackingAction *stackingAction = new MyStackingAction(stackingAction);
+	//SetUserAction(stackingAction);
+
 }

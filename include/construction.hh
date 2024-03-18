@@ -15,12 +15,13 @@
 #include "G4Trap.hh"
 #include "G4GenericMessenger.hh"
 #include "G4Sphere.hh"
-#include "G4UnionSolid.hh"
-#include "G4SubtractionSolid.hh"
 #include "G4VSolid.hh"
+#include "G4SubtractionSolid.hh"
 #include "G4IntersectionSolid.hh"
+#include "G4UnionSolid.hh"
 #include "G4RotationMatrix.hh"
-
+#include "G4Transform3D.hh"
+#include "G4Cons.hh"
 //#include "G4CMP.hh"
 
 #include "detector.hh"
@@ -39,20 +40,21 @@ public:
 
 private:
 	G4GenericMessenger *fMessenger;
-	G4double detLength, detRadius, detOffset;
+	G4double detLength, detRadius, detOffset, sourceHeight;
 	G4String worldMatChoice, windowMatChoice;
 	G4bool spawnBackWall, spawnWindow;
 	G4LogicalVolume *fScoringVolume;
 	
-	G4Box *solidAtmosphere, *solidWorld, *solidXeBox;
-	G4LogicalVolume *logicDet, *logicAtmosphere[10], *logicWorld, *logicShield1, *logicShield2, *logicShield3, *logicXeBox, *logicWindow, *logicSubtract, *logicIntersect, *logicProbe, *logicArmOut, *logicArmIn, *logicOuterMount, *logicTip;
-	G4VPhysicalVolume *physAtmosphere[10], *physWorld, *physDet, *physShield, *physShield2, *physShield3, *physXeBox, *physWindow, *physSubtract, *physIntersect,*physProbe, *physArmOut, *physArmIn, *physOuterMount, *physTip;
-	G4Material *Air[10];
-	G4Tubs *solidDet, *solidShield1, *solidShield2, *solidShield3, *solidWindow, *solidArmOut, *solidArmIn, *solidProbe, *solidOuterMount, *solidTip;
-	G4VSolid *solidIntersect;
-
-	G4Material *intersectMat;
-	G4Element *Mn, *Si, *Ni, *Fe, *Cr;
+	G4Box *solidAtmosphere, *solidWorld, *solidTip3;
+	G4Sphere *solidXeVolume, *solidIonSphere;
+	G4VSolid *solidTip2_1, *solidTip2_2, *solidTip2, *solidTipConnector1, *solidTipConnector2, *solidTipConnector, *solidTipConnector_2, *solidTipConnector3, *solidTipConnector4, *solidChamberSide3_1, *solidChamberSide3_2, *solidChamberSide3;
+	
+	G4LogicalVolume *logicDet, *logicAtmosphere[10], *logicWorld, *logicShield1, *logicShield2, *logicShield3, *logicXeVolume, *logicWindow, *logicChamber, *logicProbe, *logicTip, *logicTip2, *logicTip3, *logicTipConnector, *logicTipConnector_2, *logicHousing, *logicChamberSide, *logicChamberSide2, *logicChamberSide3, *logicChamberSide4, *logicGear, *logicIonSphere;
+	G4VPhysicalVolume *physAtmosphere[10], *physWorld, *physDet, *physShield, *physShield2, *physShield3, *physXeVolume, *physWindow, *physChamber, *physChamber2, *physProbe, *physTip, *physTip2, *physTip3, *physTipConnector, *physTipConnector_2, *physHousing, *physChamberSide, *physChamberSide2, *physChamberSide3, *physChamberSide4, *physGear, *physIonSphere;
+	
+	G4Material *Galactic[10];
+	G4Tubs *solidDet, *solidShield1, *solidShield2, *solidShield3, *solidWindow, *solidProbe, *solidHousing, *solidChamberSide, *solidChamberSide2, *solidChamberSide4, *solidGearBase;
+	G4Cons *solidTip;
 
 	virtual void ConstructSDandField();
 

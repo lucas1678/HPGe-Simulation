@@ -16,6 +16,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/icasandjian/geant4/geant4-v11.0.2/examples/projects/bariumProject/HPGe-Simulation/src/generator.cc" "CMakeFiles/sim.dir/src/generator.cc.o" "gcc" "CMakeFiles/sim.dir/src/generator.cc.o.d"
   "/home/icasandjian/geant4/geant4-v11.0.2/examples/projects/bariumProject/HPGe-Simulation/src/physics.cc" "CMakeFiles/sim.dir/src/physics.cc.o" "gcc" "CMakeFiles/sim.dir/src/physics.cc.o.d"
   "/home/icasandjian/geant4/geant4-v11.0.2/examples/projects/bariumProject/HPGe-Simulation/src/run.cc" "CMakeFiles/sim.dir/src/run.cc.o" "gcc" "CMakeFiles/sim.dir/src/run.cc.o.d"
+  "/home/icasandjian/geant4/geant4-v11.0.2/examples/projects/bariumProject/HPGe-Simulation/src/stackingaction.cc" "CMakeFiles/sim.dir/src/stackingaction.cc.o" "gcc" "CMakeFiles/sim.dir/src/stackingaction.cc.o.d"
   "/home/icasandjian/geant4/geant4-v11.0.2/examples/projects/bariumProject/HPGe-Simulation/src/stepping.cc" "CMakeFiles/sim.dir/src/stepping.cc.o" "gcc" "CMakeFiles/sim.dir/src/stepping.cc.o.d"
   )
 

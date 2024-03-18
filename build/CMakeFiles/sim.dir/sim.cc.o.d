@@ -606,14 +606,17 @@ CMakeFiles/sim.dir/sim.cc.o: \
  /home/icasandjian/geant4/geant4-v11.0.2-install/include/Geant4/G4AnyMethod.hh \
  /home/icasandjian/geant4/geant4-v11.0.2-install/include/Geant4/G4Sphere.hh \
  /home/icasandjian/geant4/geant4-v11.0.2-install/include/Geant4/G4Sphere.icc \
- /home/icasandjian/geant4/geant4-v11.0.2-install/include/Geant4/G4UnionSolid.hh \
+ /home/icasandjian/geant4/geant4-v11.0.2-install/include/Geant4/G4VSolid.hh \
+ /home/icasandjian/geant4/geant4-v11.0.2-install/include/Geant4/G4SubtractionSolid.hh \
  /home/icasandjian/geant4/geant4-v11.0.2-install/include/Geant4/G4BooleanSolid.hh \
  /home/icasandjian/geant4/geant4-v11.0.2-install/include/Geant4/G4DisplacedSolid.hh \
  /home/icasandjian/geant4/geant4-v11.0.2-install/include/Geant4/G4BooleanSolid.icc \
- /home/icasandjian/geant4/geant4-v11.0.2-install/include/Geant4/G4SubtractionSolid.hh \
- /home/icasandjian/geant4/geant4-v11.0.2-install/include/Geant4/G4VSolid.hh \
  /home/icasandjian/geant4/geant4-v11.0.2-install/include/Geant4/G4IntersectionSolid.hh \
+ /home/icasandjian/geant4/geant4-v11.0.2-install/include/Geant4/G4UnionSolid.hh \
  /home/icasandjian/geant4/geant4-v11.0.2-install/include/Geant4/G4RotationMatrix.hh \
+ /home/icasandjian/geant4/geant4-v11.0.2-install/include/Geant4/G4Transform3D.hh \
+ /home/icasandjian/geant4/geant4-v11.0.2-install/include/Geant4/G4Cons.hh \
+ /home/icasandjian/geant4/geant4-v11.0.2-install/include/Geant4/G4Cons.icc \
  /home/icasandjian/geant4/geant4-v11.0.2/examples/projects/bariumProject/HPGe-Simulation/include/detector.hh \
  /home/icasandjian/geant4/geant4-v11.0.2-install/include/Geant4/G4VSensitiveDetector.hh \
  /home/icasandjian/geant4/geant4-v11.0.2-install/include/Geant4/G4VReadOutGeometry.hh \
@@ -720,6 +723,7 @@ CMakeFiles/sim.dir/sim.cc.o: \
  /home/icasandjian/geant4/geant4-v11.0.2/examples/projects/bariumProject/HPGe-Simulation/include/stepping.hh \
  /home/icasandjian/geant4/geant4-v11.0.2-install/include/Geant4/G4UserSteppingAction.hh \
  /home/icasandjian/geant4/geant4-v11.0.2-install/include/Geant4/G4Step.hh \
+ /home/icasandjian/geant4/geant4-v11.0.2-install/include/Geant4/G4Electron.hh \
  /home/icasandjian/geant4/geant4-v11.0.2/examples/projects/bariumProject/HPGe-Simulation/include/construction.hh \
  /home/icasandjian/geant4/geant4-v11.0.2/examples/projects/bariumProject/HPGe-Simulation/include/event.hh \
  /home/icasandjian/geant4/geant4-v11.0.2-install/include/Geant4/G4UserEventAction.hh \

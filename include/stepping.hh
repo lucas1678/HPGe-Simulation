@@ -6,6 +6,7 @@
 #include "G4RunManager.hh"
 #include "G4PhysicsOrderedFreeVector.hh"
 #include "G4AnalysisManager.hh"
+#include "G4Electron.hh"
 
 #include "construction.hh"
 #include "event.hh"
@@ -28,6 +29,8 @@ private:
 	G4double prevTrackID = 0.;
 	G4double prevGtime = 0.;
 	G4double stopTime;
+	//G4String particleName;
+	G4double parentID;
 };
 
 #endif

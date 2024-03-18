@@ -7,7 +7,6 @@
 #include "G4UIExecutive.hh"
 #include "QGSP_BERT.hh"
 
-
 #include "construction.hh"
 #include "physics.hh"
 #include "action.hh"
@@ -33,7 +32,7 @@ int main(int argc, char** argv)
 
 	G4UImanager *UImanager = G4UImanager::GetUIpointer();
 
-	G4UIExecutive *ui = 0;
+	/*G4UIExecutive *ui = 0;
 	if(argc == 1) //if you just run ./sim
 	{
 		ui = new G4UIExecutive(argc, argv);
@@ -47,6 +46,38 @@ int main(int argc, char** argv)
 		G4String fileName = argv[1];
 		UImanager->ApplyCommand("/control/execute macros/geometry.mac");
 		UImanager->ApplyCommand(command+fileName);
+	}*/
+
+	G4UIExecutive *ui = 0;
+	G4cout << "test message before loop";
+	if(argc == 1) //if you just run ./sim
+	{
+		G4String command = "/control/execute ";
+		G4cout << "Which isotope file? ";
+		G4String fileName;
+		G4cin >> fileName;
+		UImanager->ApplyCommand("/control execute macros/geometry.mac");
+		UImanager->ApplyCommand(command+fileName);
+	}
+	else   
+	{
+		if(argc == 2) //if you run ./sim and one argument (now a bit useless)
+		{
+			G4String command = "/control/execute ";
+			G4String fileName = argv[1]; 
+			UImanager->ApplyCommand("/control/execute macros/geometry.mac");
+			UImanager->ApplyCommand(command+fileName);
+		}
+
+		else //if you run ./sim and more than one argument, launches GUI
+		{
+			ui = new G4UIExecutive(argc, argv);
+			UImanager->ApplyCommand("/control/execute macros/geometry.mac");
+			UImanager->ApplyCommand("/control/execute macros/vis.mac");
+			ui->SessionStart();
+
+		}
+
 	}
 	return 0;
 

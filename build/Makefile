@@ -321,6 +321,30 @@ src/run.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sim.dir/build.make CMakeFiles/sim.dir/src/run.cc.s
 .PHONY : src/run.cc.s
 
+src/stackingaction.o: src/stackingaction.cc.o
+.PHONY : src/stackingaction.o
+
+# target to build an object file
+src/stackingaction.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sim.dir/build.make CMakeFiles/sim.dir/src/stackingaction.cc.o
+.PHONY : src/stackingaction.cc.o
+
+src/stackingaction.i: src/stackingaction.cc.i
+.PHONY : src/stackingaction.i
+
+# target to preprocess a source file
+src/stackingaction.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sim.dir/build.make CMakeFiles/sim.dir/src/stackingaction.cc.i
+.PHONY : src/stackingaction.cc.i
+
+src/stackingaction.s: src/stackingaction.cc.s
+.PHONY : src/stackingaction.s
+
+# target to generate assembly for a file
+src/stackingaction.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sim.dir/build.make CMakeFiles/sim.dir/src/stackingaction.cc.s
+.PHONY : src/stackingaction.cc.s
+
 src/stepping.o: src/stepping.cc.o
 .PHONY : src/stepping.o
 
@@ -378,6 +402,9 @@ help:
 	@echo "... src/run.o"
 	@echo "... src/run.i"
 	@echo "... src/run.s"
+	@echo "... src/stackingaction.o"
+	@echo "... src/stackingaction.i"
+	@echo "... src/stackingaction.s"
 	@echo "... src/stepping.o"
 	@echo "... src/stepping.i"
 	@echo "... src/stepping.s"

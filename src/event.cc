@@ -1,5 +1,6 @@
 #include "event.hh"
 #include "G4RunManager.hh" //need for G4RandGauss
+#include "stepping.hh"
 
 MyEventAction::MyEventAction(MyRunAction*)
 {
@@ -29,21 +30,21 @@ void MyEventAction::EndOfEventAction(const G4Event*)
 		fEdep = G4RandGauss::shoot(fEdep, ResolutionFunction(fEdep));
 
 		analysisManager->FillNtupleDColumn(0,0,fEdep);
-		analysisManager->FillNtupleDColumn(0,1,fTime);
+		//analysisManager->FillNtupleDColumn(0,1,fTime);
 		analysisManager->AddNtupleRow(0);
 	}
 }
 
 G4double MyEventAction::ResolutionFunction(G4double energy)
 {
-	G4double a = 0.00122673; //numbers come from my Excel analysis/fit
-	G4double c = 0.143327;
+	G4double a = 0.0009;
+	G4double c = 1.3;
 	//G4double c = 0.543327;
 
 	return a*energy + c;
 }
 
-G4double MyEventAction::QuantumEffFunction(G4double energy)
+	G4double MyEventAction::QuantumEffFunction(G4double energy)
 {
 	G4double p = 28967.7; //CHANGE TO MATCH REAL EFF. parameters also found from excel document fit
 	G4double k = 0.00000059526;
@@ -51,4 +52,4 @@ G4double MyEventAction::QuantumEffFunction(G4double energy)
 	G4double b = -0.0127744;
 	G4double c = 0.00000651426;
 	return p*(sin(k*(energy-d))*exp(b*energy)+c); // - Shout out to Alexia 2022
-} 
+}

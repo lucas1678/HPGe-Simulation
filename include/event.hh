@@ -7,6 +7,7 @@
 #include <math.h>
 
 #include "run.hh"
+//#include "stackingaction.hh"
 //#include "detector.hh"
 
 class MyEventAction : public G4UserEventAction
